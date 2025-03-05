@@ -26,4 +26,5 @@ app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
 
+
 app.listen(config.port, () => console.log(`Server running on ${config.port}`));
