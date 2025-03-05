@@ -1,25 +1,49 @@
 const User = require("../models/User");
+const Response = require("../utils/apiResponse");
+const hashedPassword = require("../utils/passwordHasher");
+const messages = require("../utils/responseMsg");
 
 const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
-  
+  try {
+    const { name, email, password, role } = req.body;
+
     if (!name || !email || !password) {
-      return res.status(201).json({ message: "All fields are required" });
+      return Response.error(res, { status: 400, message: messages.REQUIRED_FIELDS });
     }
-  
+
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return Response.error(res, { status: 400, message: messages.USER_EXISTS });
     }
-  
-    const user = await User.create({ name, email, password });
-    if (user) {
-        res.status(400).json({ message: "Invalid user data" });
-    }
-    //   res.status(201).json({ token: user.generateToken() });
-    // } else {
-    //   res.status(400).json({ message: "Invalid user data" });
-    // }
-  };
+    const hashPassword = await hashedPassword(password);
 
-  module.exports = { registerUser};
+
+    const user = await User.create({
+      name,
+      email,
+      password: hashPassword,
+      role,
+    });
+
+    if (user) {
+      Response.success(res, {
+        status: 201,
+        data: {
+          _id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          token: user.generateToken(),
+        },
+      });
+    } else {
+      Response.error(res, {status:400, message: messages.INVALID_DATA });
+    }
+  } catch (error) {
+    Response.error(res, {status:500, message: messages.SERVER_ERROR });
+  }
+};
+
+// const loginUser = async (req, res) => {};
+
+module.exports = { registerUser };
