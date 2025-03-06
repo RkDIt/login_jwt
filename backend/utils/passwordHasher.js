@@ -17,14 +17,3 @@ module.exports = { hashedPassword, comparePassword };
 
 
 
-// class passwordHasher{
-//     async hashedPassword(password){
-//         return await bcrypt.hash(password,16);
-//     }
-
-//     async comparePassword(password,hashedPassword){
-//         return await bcrypt.compare(password, hashedPassword);
-//     }
-// }
-
-// module.exports= new passwordHasher();
