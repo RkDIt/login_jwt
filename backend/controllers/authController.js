@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Response = require("../utils/apiResponse");
 const { hashedPassword, comparePassword } = require("../utils/passwordHasher");
 const messages = require("../utils/responseMsg");
+const generateToken  = require("../utils/jwtTokenGen");
 
 const registerUser = async (req, res) => {
   try {
@@ -29,6 +30,8 @@ const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       role,
+      
+     
     });
 
     if (user) {
@@ -39,7 +42,7 @@ const registerUser = async (req, res) => {
           name: user.name,
           email: user.email,
           role: user.role,
-          token: user.generateToken(),
+       
         },
       });
     } else {
@@ -67,7 +70,7 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return Response.error(res, {
-        status: 402,
+        status: 401,
         message: messages.INVALID_CREDENTIALS,
       });
     }
@@ -79,7 +82,7 @@ const loginUser = async (req, res) => {
 
     if (!isMatch) {
       return Response.error(res, {
-        status: 403,
+        status: 401,
         message: messages.PASS_NOMATCH,
       });
     }
@@ -92,7 +95,7 @@ const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        token: user.generateToken(),
+        token: generateToken(user._id,user.role),
       },
     });
   } catch (error) {
