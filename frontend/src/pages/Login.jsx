@@ -1,10 +1,11 @@
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import Dashboard from "./Dashboard";
 import { useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
@@ -38,11 +39,13 @@ export default function LoginPage() {
             headers: { "Content-Type": "application/json" },
           }
         );
-        const token = response.data.token;
+        const token = response.data.data.token;
+
         console.log("Login  successful :  ", response.data);
 
         axios.defaults.headers.common["Authorization"] = `Bearer  ${token}`;
         if (response.status === 200) {
+          localStorage.setItem("token", token);
           toast.success("Login successful!", {
             position: "top-right",
             autoClose: 3000,

@@ -30,7 +30,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       role,
-      
+ 
      
     });
 
@@ -41,8 +41,6 @@ const registerUser = async (req, res) => {
           _id: user.id,
           name: user.name,
           email: user.email,
-          role: user.role,
-       
         },
       });
     } else {
