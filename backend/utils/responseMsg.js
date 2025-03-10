@@ -5,5 +5,6 @@ module.exports = {
     REQUIRED_FIELDS: "All fields are required",
     INVALID_CREDENTIALS:"invalid login credentials",
     PASS_NOMATCH:"Password dosent match",
-    INVALID_TOKEN:"Invalid  Token"
+    INVALID_TOKEN:"Invalid  Token",
+    NO_TOKEN: "No Token Provided"
 };

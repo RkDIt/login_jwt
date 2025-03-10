@@ -1,105 +1,31 @@
-const User = require("../models/User");
 const Response = require("../utils/apiResponse");
-const { hashedPassword, comparePassword } = require("../utils/passwordHasher");
+const userService = require("../services/userServices");
 const messages = require("../utils/responseMsg");
-const generateToken  = require("../utils/jwtTokenGen");
 
 const registerUser = async (req, res) => {
-  try {
-    const { name, email, password, role } = req.body;
-
-    if (!name || !email || !password) {
-      return Response.error(res, {
-        status: 400,
-        message: messages.REQUIRED_FIELDS,
-      });
+    try {
+        const data = await userService.registerUser(req.body);
+        return Response.success(res, { status: 201, data });
+    } catch (error) {
+        console.error("Error in registerUser:", error);
+        return Response.error(res, { 
+            status: error.status || 500, 
+            message: error.message || messages.SERVER_ERROR 
+        });
     }
-
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return Response.error(res, {
-        status: 400,
-        message: messages.USER_EXISTS,
-      });
-    }
-
-    const hashPassword = await hashedPassword(password);
-
-    const user = await User.create({
-      name,
-      email,
-      password: hashPassword,
-      role,
- 
-     
-    });
-
-    if (user) {
-      return Response.success(res, {
-        status: 201,
-        data: {
-          _id: user.id,
-          name: user.name,
-          email: user.email,
-        },
-      });
-    } else {
-      return Response.error(res, {
-        status: 400,
-        message: messages.INVALID_DATA,
-      });
-    }
-  } catch (error) {
-    console.error("Error in registerUser:", error);
-    return Response.error(res, { status: 500, message: messages.SERVER_ERROR });
-  }
 };
 
 const loginUser = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return Response.error(res, {
-        status: 401,
-        message: messages.REQUIRED_FIELDS,
-      });
+    try {
+        const data = await userService.loginUser(req.body);
+        return Response.success(res, { status: 200, data });
+    } catch (error) {
+        console.error("Error in loginUser:", error);
+        return Response.error(res, { 
+            status: error.status || 500, 
+            message: error.message || messages.SERVER_ERROR 
+        });
     }
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      return Response.error(res, {
-        status: 401,
-        message: messages.INVALID_CREDENTIALS,
-      });
-    }
-    console.log(password);
-    console.log(user.password);
-
-    const isMatch = await comparePassword(password, user.password);
-    console.log(isMatch);
-
-    if (!isMatch) {
-      return Response.error(res, {
-        status: 401,
-        message: messages.PASS_NOMATCH,
-      });
-    }
-
-    // Success response
-    return Response.success(res, {
-      status: 200,
-      data: {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id,user.role),
-      },
-    });
-  } catch (error) {
-    console.error("Error in loginUser:", error);
-    return Response.error(res, { status: 500, message: messages.SERVER_ERROR });
-  }
 };
 
 module.exports = { registerUser, loginUser };
