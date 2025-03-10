@@ -33,7 +33,7 @@ export default function LoginPage() {
 
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/auth/login",
+          "http://localhost:8007/api/login",
           values,
           {
             headers: { "Content-Type": "application/json" },

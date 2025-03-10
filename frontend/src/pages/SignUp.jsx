@@ -42,7 +42,7 @@ const SignUp = () => {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/auth/register",
+          "http://localhost:8007/api/register",
           values,
           {
             headers: {
