@@ -1,10 +1,10 @@
 const Response = require("../utils/apiResponse");
-const userService = require("../services/userServices");
+const authService = require("../services/authServices");
 const messages = require("../utils/responseMsg");
 
 const registerUser = async (req, res) => {
     try {
-        const data = await userService.registerUser(req.body);
+        const data = await authService.registerUser(req.body);
         return Response.success(res, { status: 201, data });
     } catch (error) {
         console.error("Error in registerUser:", error);
@@ -17,7 +17,7 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
     try {
-        const data = await userService.loginUser(req.body);
+        const data = await authService.loginUser(req.body);
         return Response.success(res, { status: 200, data });
     } catch (error) {
         console.error("Error in loginUser:", error);

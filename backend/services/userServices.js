@@ -1,59 +1,68 @@
 const User = require("../models/User");
-const { hashedPassword, comparePassword } = require("../utils/passwordHasher");
-const generateToken = require("../utils/jwtTokenGen");
 const messages = require("../utils/responseMsg");
+const mongoose = require("mongoose");
 
-const registerUser = async ({ name, email, password, role }) => {
-    if (!name || !email || !password) {
-        throw { status: 400, message: messages.REQUIRED_FIELDS };
-    }
+// const currentUser = async ({ _id }) => {
+//   if (!_id) {
+//     throw { status: 401, message: messages.INVALID_DATA };
+//   }
 
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-        throw { status: 400, message: messages.USER_EXISTS };
-    }
+//   if (!mongoose.Types.ObjectId.isValid(_id)) {
+//     throw { status: 400, message: messages.INVALID_ID };
+//   }
 
-    const hashPassword = await hashedPassword(password);
-    const user = await User.create({
-        name,
-        email,
-        password: hashPassword,
-        role
-    });
+//   try {
+//     const user = await User.findOne({ _id });
+
+//     if (!user) {
+//       throw { status: 404, message: messages.USER_NOT_FOUND };
+//     }
+
+//     return {
+//       _id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       role: user.role,
+//     };
+//   } catch (error) {
+//     console.error("Error fetching user:", error);
+//     throw { status: 500, message: messages.SERVER_ERROR };
+//   }
+// };
+
+const currentUser = async ({ _id }) => {
+  console.log("Received _id in currentUser:", _id);  // ✅ Log 1
+
+  if (!_id) {
+    console.log("Invalid data: Missing _id");  // ✅ Log 2
+    throw { status: 401, message: messages.INVALID_DATA };
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
+    console.log("Invalid ObjectId format:", _id);  // ✅ Log 3
+    throw { status: 400, message: messages.INVALID_ID };
+  }
+
+  try {
+    const user = await User.findOne({ _id });
+    console.log("User fetched from DB:", user);  // ✅ Log 4
 
     if (!user) {
-        throw { status: 400, message: messages.INVALID_DATA };
+      console.log("User not found for _id:", _id);  // ✅ Log 5
+      throw { status: 404, message: messages.USER_NOT_FOUND };
     }
 
     return {
-        _id: user.id,
-        name: user.name,
-        email: user.email
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
     };
+  } catch (error) {
+    console.error("Error fetching user:", error);  // ✅ Log 6
+    throw { status: 500, message: messages.SERVER_ERROR };
+  }
 };
 
-const loginUser = async ({ email, password }) => {
-    if (!email || !password) {
-        throw { status: 401, message: messages.REQUIRED_FIELDS };
-    }
 
-    const user = await User.findOne({ email });
-    if (!user) {
-        throw { status: 401, message: messages.INVALID_CREDENTIALS };
-    }
-
-    const isMatch = await comparePassword(password, user.password);
-    if (!isMatch) {
-        throw { status: 401, message: messages.PASS_NOMATCH };
-    }
-
-    return {
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id, user.role)
-    };
-};
-
-module.exports = { registerUser, loginUser };
+module.exports = { currentUser };
