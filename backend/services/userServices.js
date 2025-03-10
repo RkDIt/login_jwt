@@ -2,33 +2,7 @@ const User = require("../models/User");
 const messages = require("../utils/responseMsg");
 const mongoose = require("mongoose");
 
-// const currentUser = async ({ _id }) => {
-//   if (!_id) {
-//     throw { status: 401, message: messages.INVALID_DATA };
-//   }
 
-//   if (!mongoose.Types.ObjectId.isValid(_id)) {
-//     throw { status: 400, message: messages.INVALID_ID };
-//   }
-
-//   try {
-//     const user = await User.findOne({ _id });
-
-//     if (!user) {
-//       throw { status: 404, message: messages.USER_NOT_FOUND };
-//     }
-
-//     return {
-//       _id: user._id,
-//       name: user.name,
-//       email: user.email,
-//       role: user.role,
-//     };
-//   } catch (error) {
-//     console.error("Error fetching user:", error);
-//     throw { status: 500, message: messages.SERVER_ERROR };
-//   }
-// };
 
 const currentUser = async ({ _id }) => {
   console.log("Received _id in currentUser:", _id);  // ✅ Log 1
