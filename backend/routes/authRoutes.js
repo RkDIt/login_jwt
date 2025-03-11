@@ -12,4 +12,5 @@ router.post("/login", loginUser);
 router.get("/user", verifyToken, getUser);
 router.get("/admin/user/:id", verifyToken, getUser); // 🔒 Protected route
 
+
 module.exports = router;

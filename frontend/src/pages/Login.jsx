@@ -1,5 +1,4 @@
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
-import Dashboard from "./Dashboard";
 import { useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -33,7 +32,7 @@ export default function LoginPage() {
 
       try {
         const response = await axios.post(
-          "http://localhost:8007/api/login",
+          "http://localhost:8007/api/auth/login",
           values,
           {
             headers: { "Content-Type": "application/json" },

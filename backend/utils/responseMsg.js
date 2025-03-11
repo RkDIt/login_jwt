@@ -6,5 +6,10 @@ module.exports = {
     INVALID_CREDENTIALS:"invalid login credentials",
     PASS_NOMATCH:"Password dosent match",
     INVALID_TOKEN:"Invalid  Token",
-    NO_TOKEN: "No Token Provided"
+    NO_TOKEN: "No Token Provided",
+    NO_DATA_FOUND: "No Data found",
+    FETCH_SUCCESS: "Fetch Success",
+
+
+
 };
