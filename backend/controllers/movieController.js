@@ -32,6 +32,9 @@ const topRec = async(req,res)=>{
         try {
             const data = await movieService.recMovies();
             console.log(data)
+            return Response.success(res, {
+                status: 200,
+                data})
         } catch (error) {
             console.log(error)
         }
