@@ -8,6 +8,7 @@ import PrivateRoute from "./PrivateRoutes.jsx";
 import SignUp from "../pages/SignUp.jsx";
 import Login from "../pages/Login.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
+import Profile from  "../pages/Profile.jsx"
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
 
       <Route element={<PrivateRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element = {<Profile/>}/>
       </Route>
     </Routes>
   );
