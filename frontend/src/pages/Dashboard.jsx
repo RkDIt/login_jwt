@@ -1,8 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import Navbar from "../../components/Navbar";
-import Carousel from "../../components/Carousel";
-import RecList from "../../components/RecList";
+import Navbar from "../components/Navbar";
+import Carousel from "../components/Carousel";
+import RecList from "../components/RecList";
 
 const Dashboard = () => {
   return (

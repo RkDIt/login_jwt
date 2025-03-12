@@ -31,7 +31,7 @@ const slideMovies = async (req, res) => {
 const topRec = async(req,res)=>{
         try {
             const data = await movieService.recMovies();
-            console.log(data)
+            // console.log(data)
             return Response.success(res, {
                 status: 200,
                 data})

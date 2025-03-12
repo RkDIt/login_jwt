@@ -3,17 +3,20 @@ const userServices = require("../services/userServices");
 const messages = require("../utils/responseMsg");
 
 const getUser = async (req, res) => {
-  console.log("req.user", req.user);  
+  // console.log("req.user", req.user);
   console.log("req.params.id", req.params.id);
-  
+
   try {
-    const userId = req.params.id || req.user?.id;  
+    const userId = req.params.id || req.user?.id;
     if (!userId) {
-      return Response.error(res, { status: 400, message: messages.INVALID_DATA });
+      return Response.error(res, {
+        status: 400,
+        message: messages.INVALID_DATA,
+      });
     }
 
     const users = await userServices.currentUser({ _id: userId });
-    console.log(users);
+    console.log("hwllo", users);
 
     if (!users) {
       return Response.error(res, { status: 404, message: messages.NOT_FOUND });
@@ -22,7 +25,10 @@ const getUser = async (req, res) => {
     return Response.success(res, { status: 200, data: users });
   } catch (error) {
     if (error.status === 401) {
-      return Response.error(res, { status: 401, message: messages.UNAUTHORIZED });
+      return Response.error(res, {
+        status: 401,
+        message: messages.UNAUTHORIZED,
+      });
     }
     if (error.status === 404) {
       return Response.error(res, { status: 404, message: messages.NOT_FOUND });
@@ -31,5 +37,19 @@ const getUser = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  const adminId  =   req.user.id;
+  try {
+    const user = await userServices.currentUser({ _id: adminId });
+    console.log("Admin user", user);
 
-module.exports = { getUser };
+    const usersList =  await userServices.usersList({ _id: adminId });
+    if (!user) {
+      return Response.error(res, { status: 404, message: messages.NOT_FOUND });
+    }
+
+    return Response.success(res, { status: 200, data: usersList });
+  } catch (error) {console.log(error)}
+};
+
+module.exports = { getUser, getAllUsers };
