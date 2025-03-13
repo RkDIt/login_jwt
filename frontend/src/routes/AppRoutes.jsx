@@ -9,7 +9,6 @@ import Profile from "../pages/Profile.jsx";
 import Logout from "../pages/Logout.jsx";
 import UserManage from "../pages/AdminPages/UserManage.jsx";
 import MovieInfo from "../pages/MovieInfo.jsx";
-import Showtimes from "../components/bookingInfo.jsx";
 import BookingPage from "../pages/BookingPage.jsx";
 
 const isAuthenticated = () => !!localStorage.getItem("token");
@@ -28,20 +27,24 @@ const AppRoutes = () => {
       />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
+      {/* User Protected Routes */}
       <Route element={<PrivateRoute allowedRoles={["user"]} />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/movieInfo/:id" element={<MovieInfo />} />
-        <Route path="/booking" element={<BookingPage/>} />
         
+        {/* Booking is only accessible through a specific movie */}
+        <Route path="/booking/:movieId" element={<BookingPage />} />
       </Route>
 
+      {/* Admin Protected Routes */}
       <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/admin/users" element={<UserManage />} />
       </Route>
 
+      {/* Redirect all unknown routes */}
       <Route path="*" element={<Navigate to={isAuthenticated() ? (getUserRole() === "admin" ? "/admin" : "/dashboard") : "/signup"} replace />} />
     </Routes>
   );
