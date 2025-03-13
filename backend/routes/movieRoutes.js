@@ -5,6 +5,6 @@ const router = express.Router();
 // router.get("/movies/search", searchMovies),
   router.get("/carousel", slideMovies);
   router.get("/recMovies",topRec)
-  router.get("/selectedMovie",getMovieControl)
+  router.get("/selectedMovie/:id",getMovieControl)
 
 module.exports = router;

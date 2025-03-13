@@ -17,10 +17,9 @@ export const recList = async () => {
     console.log(error);
   }
 };
-
-export const movieDetails = async () => {
+export const movieDetails = async (movieId) => {
   try {
-    const response = await axiosInstance.get("/movie/selectedMovie");
+    const response = await axiosInstance.get(`/movie/selectedMovie/${movieId}`);
     return response.data;
   } catch (error) {
     console.log(error);

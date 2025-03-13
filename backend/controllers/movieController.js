@@ -42,7 +42,7 @@ const topRec = async (req, res) => {
 };
 
 const getMovieControl = async (req, res) => {
-  const { movieId } = req.body;
+  const { id: movieId } = req.params;
 
   try {
     const movieDetails = await movieService.getMovie(movieId);

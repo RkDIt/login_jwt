@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { recList } from "../api/movieApi";
+import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Star, Bookmark } from "lucide-react";
 
 const RecList = () => {
@@ -8,7 +9,7 @@ const RecList = () => {
   const scrollRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -37,7 +38,8 @@ const RecList = () => {
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount = direction === "left" ? -clientWidth / 4 : clientWidth / 4;
+      const scrollAmount =
+        direction === "left" ? -clientWidth / 4 : clientWidth / 4;
       scrollRef.current.scrollTo({
         left: scrollLeft + scrollAmount,
         behavior: "smooth",
@@ -71,7 +73,8 @@ const RecList = () => {
             <motion.div
               key={movie._id}
               className="movie-card min-w-[22%] max-w-[18%] rounded-lg overflow-hidden bg-gradient-to-t from-black to-gray-900 cursor-pointer relative hover:shadow-[0_4px_15px_rgba(0,0,0,1)] transition-shadow duration-300"
-              onClick={() => console.log(`Clicked on movie ID: ${movie._id}`)}
+              onClick={() => navigate(`/movieInfo/${movie._id}`)}
+              // onsole.log(`Clicked on movie ID: ${movie._id}`)
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -115,7 +118,9 @@ const RecList = () => {
                     {movie.name}
                     <span
                       className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black"
-                      style={{ display: movie.name.length > 20 ? "block" : "none" }}
+                      style={{
+                        display: movie.name.length > 20 ? "block" : "none",
+                      }}
                     />
                   </h3>
                 </div>
