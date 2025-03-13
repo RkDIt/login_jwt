@@ -187,6 +187,7 @@ const MovieInfo = () => {
                 <Box sx={{ mt: 6, display: "flex", gap: 3 }}>
                   {/* Book Now Button (Red) */}
                   <Button
+                    onClick={()=>navigate("/booking")}
                     variant="contained"
                     startIcon={<Ticket />}
                     sx={{

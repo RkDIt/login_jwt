@@ -9,6 +9,8 @@ import Profile from "../pages/Profile.jsx";
 import Logout from "../pages/Logout.jsx";
 import UserManage from "../pages/AdminPages/UserManage.jsx";
 import MovieInfo from "../pages/MovieInfo.jsx";
+import Showtimes from "../components/bookingInfo.jsx";
+import BookingPage from "../pages/BookingPage.jsx";
 
 const isAuthenticated = () => !!localStorage.getItem("token");
 const getUserRole = () => localStorage.getItem("role");
@@ -31,6 +33,8 @@ const AppRoutes = () => {
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/movieInfo/:id" element={<MovieInfo />} />
+        <Route path="/booking" element={<BookingPage/>} />
+        
       </Route>
 
       <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
