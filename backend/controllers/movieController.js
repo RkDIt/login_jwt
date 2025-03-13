@@ -28,16 +28,35 @@ const slideMovies = async (req, res) => {
   }
 };
 
-const topRec = async(req,res)=>{
-        try {
-            const data = await movieService.recMovies();
-            // console.log(data)
-            return Response.success(res, {
-                status: 200,
-                data})
-        } catch (error) {
-            console.log(error)
-        }
-}
+const topRec = async (req, res) => {
+  try {
+    const data = await movieService.recMovies();
+    // console.log(data)
+    return Response.success(res, {
+      status: 200,
+      data,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-module.exports = { slideMovies,topRec };
+const getMovieControl = async (req, res) => {
+  const { movieId } = req.body;
+
+  try {
+    const movieDetails = await movieService.getMovie(movieId);
+
+    return res.status(200).json({
+      success: true,
+      data: movieDetails, 
+    });
+  } catch (error) {
+    console.error("Error fetching movie:", error.message);
+    return res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+module.exports = { slideMovies, topRec, getMovieControl };

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { getAllUsers, deleteUser } from "../api/userApi";
+import { getAllUsers, editUser, deleteUser } from "../api/userApi";
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, Radio, Button, Typography, Box
+  Paper, Radio, Button, Typography, Box, TextField, Select, MenuItem
 } from "@mui/material";
 
 const AdminUserTable = () => {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ name: "", email: "", role: "user" });
+  const [originalData, setOriginalData] = useState({});
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -21,6 +24,45 @@ const AdminUserTable = () => {
     fetchUsers();
   }, []);
 
+  const handleEditClick = () => {
+    if (!selectedUser) return;
+    const user = users.find(user => user._id === selectedUser);
+    if (user) {
+      setEditData({ name: user.name, email: user.email, role: user.role });
+      setOriginalData({ name: user.name, email: user.email, role: user.role });
+      setIsEditing(true);
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!selectedUser || JSON.stringify(editData) === JSON.stringify(originalData)) return;
+  
+    try {
+      await editUser(selectedUser, editData);
+      setUsers(users.map(user => (user._id === selectedUser ? { ...user, ...editData } : user)));
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating user:", error);
+  
+      // Check if error response exists and contains the "email already exists" message
+      if (error.response && error.response.data.message === "Email already exists") {
+        alert("This email is already in use. Please use a different email.");
+        
+        // Revert email input back to its original value
+        setEditData((prev) => ({ ...prev, email: originalData.email }));
+      } else {
+        alert("An error occurred while updating the user. Please try again.");
+      }
+    }
+  };
+  
+  
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditData(originalData);
+  };
+
   const handleDelete = async () => {
     if (!selectedUser) return;
     try {
@@ -32,100 +74,125 @@ const AdminUserTable = () => {
     }
   };
 
+  const hasChanges = JSON.stringify(editData) !== JSON.stringify(originalData);
+
   return (
-    <Box sx={{ p: 4, display: "flex", flexDirection: "column", gap: 3 }}>
+    <Box sx={{ p: 4, display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Header Section */}
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", color: "#1F2937" }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
           Manage Users
         </Typography>
         <Box sx={{ display: "flex", gap: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            disabled={!selectedUser}
-            onClick={() => alert(`Editing user ID: ${selectedUser}`)}
-            sx={{
-              textTransform: "none",
-              fontSize: "16px",
-              fontWeight: "bold",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)"
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="error"
-            size="large"
-            disabled={!selectedUser}
-            onClick={handleDelete}
-            sx={{
-              textTransform: "none",
-              fontSize: "16px",
-              fontWeight: "bold",
-              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)"
-            }}
-          >
-            Delete
-          </Button>
+          {isEditing ? (
+            <>
+              <Button variant="contained" color="success" disabled={!hasChanges} onClick={handleEdit}>
+                Save
+              </Button>
+              <Button variant="contained" color="inherit" onClick={handleCancel}>
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="contained" color="primary" disabled={!selectedUser} onClick={handleEditClick}>
+                Edit
+              </Button>
+              <Button variant="contained" color="error" disabled={!selectedUser} onClick={handleDelete}>
+                Delete
+              </Button>
+            </>
+          )}
         </Box>
       </Box>
 
-      {/* Glassmorphism Table */}
+      {/* Table */}
       <TableContainer
         component={Paper}
         sx={{
-          background: "rgba(255, 255, 255, 0.25)",
-          backdropFilter: "blur(12px)",
-          borderRadius: "12px",
-          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
-          overflow: "hidden",
+          background: "rgba(255, 255, 255, 0.2)",
+          backdropFilter: "blur(10px)",
+          borderRadius: "10px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)"
         }}
       >
         <Table>
           <TableHead>
-            <TableRow sx={{ background: "rgba(0, 0, 0, 0.05)" }}>
-              <TableCell align="center" sx={{ fontSize: "18px", fontWeight: "bold", color: "#374151" }}>
-                Select
-              </TableCell>
-              <TableCell sx={{ fontSize: "18px", fontWeight: "bold", color: "#374151" }}>
-                Name
-              </TableCell>
-              <TableCell sx={{ fontSize: "18px", fontWeight: "bold", color: "#374151" }}>
-                Email
-              </TableCell>
-              <TableCell sx={{ fontSize: "18px", fontWeight: "bold", color: "#374151" }}>
-                Role
-              </TableCell>
+            <TableRow sx={{ background: "rgba(255, 255, 255, 0.4)" }}>
+              <TableCell align="center">Select</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Role</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {users.map((user) => (
               <TableRow
                 key={user._id}
-                onClick={() => setSelectedUser(user._id)}
+                onClick={() => !isEditing && setSelectedUser(user._id)}
                 sx={{
-                  cursor: "pointer",
+                  cursor: isEditing ? "not-allowed" : "pointer",
                   transition: "all 0.3s ease-in-out",
-                  background: selectedUser === user._id ? "rgba(33, 150, 243, 0.15)" : "transparent",
+                  background: selectedUser === user._id ? "rgba(0, 123, 255, 0.2)" : "transparent",
                   "&:hover": {
-                    background: "rgba(33, 150, 243, 0.1)",
-                    boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)"
+                    background: isEditing ? "transparent" : "rgba(0, 123, 255, 0.1)",
+                    boxShadow: selectedUser === user._id ? "0px 0px 8px rgba(0, 123, 255, 0.5)" : "none"
                   }
                 }}
               >
                 <TableCell align="center">
                   <Radio
                     checked={selectedUser === user._id}
-                    onChange={() => setSelectedUser(user._id)}
+                    onChange={() => !isEditing && setSelectedUser(user._id)}
                     color="primary"
+                    disabled={isEditing}
                   />
                 </TableCell>
-                <TableCell sx={{ fontSize: "16px", fontWeight: "500" }}>{user.name}</TableCell>
-                <TableCell sx={{ fontSize: "16px", fontWeight: "500" }}>{user.email}</TableCell>
-                <TableCell sx={{ fontSize: "16px", fontWeight: "500" }}>{user.role}</TableCell>
+                <TableCell>
+                  {isEditing && selectedUser === user._id ? (
+                    <TextField
+                      value={editData.name}
+                      onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                      variant="outlined"
+                      fullWidth
+                      size="small"
+                      sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                    />
+                  ) : (
+                    user.name
+                  )}
+                </TableCell>
+                <TableCell>
+                  {isEditing && selectedUser === user._id ? (
+                    <TextField
+                      value={editData.email}
+                      onChange={(e) => setEditData({ ...editData, email: e.target.value })}
+                      variant="outlined"
+                      fullWidth
+                      size="small"
+                      sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                    />
+                  ) : (
+                    user.email
+                  )}
+                </TableCell>
+                <TableCell>
+                  {isEditing && selectedUser === user._id ? (
+                    <Select
+                      value={editData.role}
+                      onChange={(e) => setEditData({ ...editData, role: e.target.value })}
+                      variant="outlined"
+                      fullWidth
+                      size="small"
+                      sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                    >
+                      <MenuItem value="user">User</MenuItem>
+                      <MenuItem value="admin">Admin</MenuItem>
+                    </Select>
+                  ) : (
+                    user.role
+                  )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -6,4 +6,13 @@ const slideMovies = async () => {
 const recMovies = async() =>{
   return await  Movie.aggregate([{$sample:{size:10}}])
 }
-module.exports = { slideMovies, recMovies };
+
+const getMovie = async (movieId) => {
+  const movie = await Movie.findById(movieId);
+  if (!movie) {
+    throw new Error("Movie not found");
+  }
+  return movie; 
+};
+module.exports = { slideMovies, recMovies,getMovie };
+ 

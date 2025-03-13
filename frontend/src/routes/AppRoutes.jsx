@@ -39,7 +39,7 @@ const AppRoutes = () => {
       <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/admin/users" element={<UserManage/>} />
-        <Route path="/logout" element={<Logout />} />
+        <Route path="/logout" element={< Logout/>} />
         <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
       </Route>
 

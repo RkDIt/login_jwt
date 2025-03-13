@@ -16,6 +16,7 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
+
     try {
         const data = await authService.loginUser(req.body);
         return Response.success(res, { status: 200, data });

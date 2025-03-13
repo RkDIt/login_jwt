@@ -9,13 +9,14 @@ import {
   ChevronsLeft,
   ChevronsRight,
   UserCircle,
+  LogOut,
 } from "lucide-react";
 
 const AdminSidePanel = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Load collapsed state from localStorage (default to false)
+  // Load collapsed state from localStorage (default to true)
   const [collapsed, setCollapsed] = useState(
     () => JSON.parse(localStorage.getItem("sidebarCollapsed")) ?? true
   );
@@ -24,6 +25,11 @@ const AdminSidePanel = () => {
   useEffect(() => {
     localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
   }, [collapsed]);
+
+  const handleLogout = () => {
+    localStorage.clear(); 
+    navigate("/logout"); 
+  };
 
   const menuItems = [
     { icon: Home, label: "Dashboard", path: "/admin" },
@@ -64,6 +70,15 @@ const AdminSidePanel = () => {
           );
         })}
       </nav>
+
+      {/* Logout Button */}
+      <button
+        onClick={handleLogout}
+        className="mb-4 p-2 rounded-md bg-red-600 hover:bg-red-500 flex items-center justify-center w-full text-white"
+      >
+        <LogOut className="w-6 h-6" />
+        {!collapsed && <span className="ml-2">Logout</span>}
+      </button>
 
       {/* Expand/Collapse Button */}
       <button

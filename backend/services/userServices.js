@@ -41,13 +41,38 @@ const usersList = async ({ _id }) => {
     const users = await User.find({ _id: { $ne: _id } }).select(
       "_id name email role"
     );
-    console.log("Fetched users (excluding current user):", users); 
+    console.log("Fetched users (excluding current user):", users);
 
-    return users; 
+    return users;
   } catch (error) {
     console.error("Error fetching users list:", error);
     throw { status: 500, message: messages.SERVER_ERROR };
   }
 };
+const deleteUser = async (id) => {
+  console.log("User ID to delete:", id);
 
-module.exports = { currentUser, usersList };
+  const user = await User.findByIdAndDelete(id);
+  console.log("Deleted User Data:", user);
+
+  if (!user) {
+    return "User not found";
+  }
+
+  return "User deleted successfully";
+};
+
+const isEmailTaken = async (email, userId) => {
+  const existingUser = await User.findOne({ email, _id: { $ne: userId } });
+  return !!existingUser;
+};
+const editUser = async (id, updateData) => {
+  const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
+
+  return updatedUser;
+};
+
+module.exports = { currentUser, usersList, deleteUser, editUser, isEmailTaken };

@@ -39,7 +39,7 @@ const loginUser = async ({ email, password }) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-        throw { status: 401, message: messages.INVALID_CREDENTIALS };
+        throw { status: 401, message: messages.USER_NOT_FOUND };
     }
 
     const isMatch = await comparePassword(password, user.password);
