@@ -1,0 +1,94 @@
+import React, { useEffect, useState } from "react";
+import { Box, Typography, CircularProgress, Card, Button } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useNavigate, useLocation } from "react-router-dom";
+
+const BookingReceipt = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get transactionId from location.state (or set a default)
+  const [transactionId, setTransactionId] = useState(location.state?.transactionId || "");
+  const [movieName, setMovieName] = useState(location.state?.movieName || "Unknown Movie");
+  const [loading, setLoading] = useState(true);
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    // Simulate payment processing delay
+    setTimeout(() => {
+      setLoading(false);
+      if (!transactionId) {
+        setTransactionId("TXN" + Math.floor(Math.random() * 1000000)); // Fallback if missing
+      }
+    }, 3000);
+  }, [transactionId]);
+
+  useEffect(() => {
+    if (!loading) {
+      const interval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev === 1) {
+            clearInterval(interval);
+            navigate("/dashboard");
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [loading, navigate]);
+
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      bgcolor="#F5F5F5"
+    >
+      <Card
+        sx={{
+          maxWidth: 400,
+          width: "90%",
+          padding: 3,
+          borderRadius: 4,
+          boxShadow: 3,
+          textAlign: "center",
+        }}
+      >
+        {loading ? (
+          <>
+            <CircularProgress size={50} />
+            <Typography variant="h6" mt={2}>Processing Payment...</Typography>
+          </>
+        ) : (
+          <>
+            <CheckCircleIcon color="success" sx={{ fontSize: 50 }} />
+            <Typography variant="h5" fontWeight="bold" mt={2}>
+              Payment Successful
+            </Typography>
+            <Typography variant="body1" mt={1} color="textSecondary">
+              Movie: <strong>{movieName}</strong>
+            </Typography>
+            <Typography variant="body1" mt={1} color="textSecondary">
+              Transaction ID: <strong>{transactionId}</strong>
+            </Typography>
+            <Typography variant="body2" mt={2} color="textSecondary">
+              Redirecting to dashboard in {countdown}s...
+            </Typography>
+            <Button
+              variant="outlined"
+              sx={{ mt: 2 }}
+              onClick={() => navigate("/dashboard")}
+            >
+              Check Orders
+            </Button>
+          </>
+        )}
+      </Card>
+    </Box>
+  );
+};
+
+export default BookingReceipt;

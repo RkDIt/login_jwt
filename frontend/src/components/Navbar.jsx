@@ -13,6 +13,8 @@ const Navbar = () => {
     const fetchUserData = async () => {
       try {
         const userData = await getUserDetails();
+        localStorage.setItem("userId", userData.data._id);
+
         if (userData?.data.name) {
           setUserName(userData.data.name);
         }

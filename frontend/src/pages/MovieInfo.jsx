@@ -136,7 +136,7 @@ const MovieInfo = () => {
                     lineHeight: "1.2",
                   }}
                 >
-                  {movie.name || "Movie Title"}{" "}
+                  {movie.title || "Movie Title"}{" "}
                   <Typography
                     component="span"
                     variant="h4"
@@ -187,7 +187,11 @@ const MovieInfo = () => {
                 <Box sx={{ mt: 6, display: "flex", gap: 3 }}>
                   {/* Book Now Button (Red) */}
                   <Button
-                    onClick={()=> navigate(`/booking/${id}`)}
+                    onClick={() =>
+                      navigate(`/booking/${id}`, {
+                        state: { movieId: movie._id, movieName: movie.title, price: movie.price },
+                      })
+                    }
                     variant="contained"
                     startIcon={<Ticket />}
                     sx={{
@@ -262,7 +266,7 @@ const MovieInfo = () => {
                 {movie.poster_path ? (
                   <img
                     src={movie.poster_path}
-                    alt={movie.name}
+                    alt={movie.title}
                     style={{
                       width: "100%",
                       maxWidth: "350px",
