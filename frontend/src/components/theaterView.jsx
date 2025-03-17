@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Button, Box, Typography } from "@mui/material";
-import { format, addDays, parse } from "date-fns";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import FastfoodIcon from "@mui/icons-material/Fastfood";
+import { format, addDays, parse } from "date-fns";
 
 // Full list of available theaters
 const allTheaters = [
@@ -37,6 +38,22 @@ const Showtimes = ({ onShowtimeSelect }) => {
 
   return (
     <Box style={{ maxWidth: "650px", margin: "auto", padding: "20px" }}>
+      {/* Back Button */}
+      <Button
+        onClick={() => window.history.back()}
+        startIcon={<ArrowBackIcon />}
+        style={{
+          marginBottom: "15px",
+          backgroundColor: "#EC4D56",
+          color: "white",
+          fontWeight: "bold",
+          textTransform: "none",
+          borderRadius: "8px",
+        }}
+      >
+        Back
+      </Button>
+
       {/* Date Selector */}
       <Box style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
         {dates.map((date, index) => {
