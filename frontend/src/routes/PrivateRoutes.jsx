@@ -25,9 +25,14 @@ const PrivateRoute = ({ allowedRoles }) => {
 
   if (!token || !user) return <Navigate to="/login" replace />;
 
-  // Redirect users and admins to their respective areas
-  if (user.data.role === "user" && !allowedRoles.includes("user")) return <Navigate to="/dashboard" replace />;
-  if (user.data.role === "admin" && !allowedRoles.includes("admin")) return <Navigate to="/admin" replace />;
+  // Redirect users and admins/subadmins properly
+  if (user.data.role === "user" && !allowedRoles.includes("user")) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  if ((user.data.role === "admin" || user.data.role === "subadmin") && !allowedRoles.includes(user.data.role)) {
+    return <Navigate to="/admin" replace />;
+  }
 
   return <Outlet />;
 };

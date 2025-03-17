@@ -17,13 +17,26 @@ const getUserRole = () => localStorage.getItem("role");
 const AppRoutes = () => {
   return (
     <Routes>
+      {/* Public Routes */}
       <Route 
         path="/signup" 
-        element={isAuthenticated() ? (getUserRole() === "admin" ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />) : <SignUp />} 
+        element={
+          isAuthenticated() 
+            ? (getUserRole() === "admin" || getUserRole() === "subadmin" 
+                ? <Navigate to="/admin" replace /> 
+                : <Navigate to="/dashboard" replace />)
+            : <SignUp />
+        } 
       />
       <Route 
         path="/login" 
-        element={isAuthenticated() ? (getUserRole() === "admin" ? <Navigate to="/admin" replace /> : <Navigate to="/dashboard" replace />) : <Login />} 
+        element={
+          isAuthenticated() 
+            ? (getUserRole() === "admin" || getUserRole() === "subadmin" 
+                ? <Navigate to="/admin" replace /> 
+                : <Navigate to="/dashboard" replace />)
+            : <Login />
+        } 
       />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
@@ -33,19 +46,26 @@ const AppRoutes = () => {
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/movieInfo/:id" element={<MovieInfo />} />
-        
-        {/* Booking is only accessible through a specific movie */}
         <Route path="/booking/:movieId" element={<BookingPage />} />
       </Route>
 
-      {/* Admin Protected Routes */}
-      <Route element={<PrivateRoute allowedRoles={["admin"]} />}>
+      {/* Admin & Subadmin Protected Routes */}
+      <Route element={<PrivateRoute allowedRoles={["admin", "subadmin"]} />}>
         <Route path="/admin" element={<AdminPanel />} />
         <Route path="/admin/users" element={<UserManage />} />
       </Route>
 
       {/* Redirect all unknown routes */}
-      <Route path="*" element={<Navigate to={isAuthenticated() ? (getUserRole() === "admin" ? "/admin" : "/dashboard") : "/signup"} replace />} />
+      <Route 
+        path="*" 
+        element={
+          isAuthenticated() 
+            ? (getUserRole() === "admin" || getUserRole() === "subadmin" 
+                ? <Navigate to="/admin" replace /> 
+                : <Navigate to="/dashboard" replace />)
+            : <Navigate to="/signup" replace />
+        } 
+      />
     </Routes>
   );
 };

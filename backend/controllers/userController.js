@@ -16,7 +16,6 @@ const getUser = async (req, res) => {
     }
 
     const users = await userServices.currentUser({ _id: userId });
-    console.log("hwllo", users);
 
     if (!users) {
       return Response.error(res, { status: 404, message: messages.NOT_FOUND });

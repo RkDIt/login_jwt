@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Box, Typography } from "@mui/material";
-import { format, addDays } from "date-fns";
+import { format, addDays, parse } from "date-fns";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SmartphoneIcon from "@mui/icons-material/Smartphone";
 import FastfoodIcon from "@mui/icons-material/Fastfood";
 
-
-const theaters = [
+// Full list of available theaters
+const allTheaters = [
   { name: "PVR: Elante, Chandigarh", timings: ["04:35 PM"], cancelable: true },
   { name: "Cinepolis: Bestech Square, Mohali", timings: ["06:00 PM"], cancelable: false },
   { name: "PVR: MOHALI WALK", timings: ["10:00 PM"], cancelable: true },
@@ -14,9 +14,26 @@ const theaters = [
   { name: "PVR: Centra, Chandigarh", timings: ["01:05 PM", "07:35 PM"], cancelable: true },
 ];
 
+// Generate a unique random subset of theaters for each date
+const getRandomTheaters = () => {
+  const count = Math.floor(Math.random() * allTheaters.length) + 1; // Choose between 1 and all theaters
+  return allTheaters.sort(() => 0.5 - Math.random()).slice(0, count); // Random selection
+};
+
 const Showtimes = ({ onShowtimeSelect }) => {
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [dateTheaterMap, setDateTheaterMap] = useState({});
+  const currentTime = format(new Date(), "hh:mm a"); // Current real-time in AM/PM format
+
   const dates = Array.from({ length: 5 }, (_, i) => addDays(new Date(), i));
+
+  useEffect(() => {
+    const newTheaterMap = {};
+    dates.forEach((date) => {
+      newTheaterMap[format(date, "yyyy-MM-dd")] = getRandomTheaters();
+    });
+    setDateTheaterMap(newTheaterMap);
+  }, []);
 
   return (
     <Box style={{ maxWidth: "650px", margin: "auto", padding: "20px" }}>
@@ -25,7 +42,7 @@ const Showtimes = ({ onShowtimeSelect }) => {
         {dates.map((date, index) => {
           const dateStr = format(date, "yyyy-MM-dd");
           const isSelected = dateStr === selectedDate;
-          const isDisabled = index >= 3;
+          const isDisabled = index >= 3; // Disable selection beyond 3rd date
 
           return (
             <Button
@@ -62,7 +79,7 @@ const Showtimes = ({ onShowtimeSelect }) => {
 
       {/* Theater Listings */}
       <Box>
-        {theaters.map((theater, index) => (
+        {dateTheaterMap[selectedDate]?.map((theater, index) => (
           <Box
             key={index}
             style={{
@@ -91,16 +108,26 @@ const Showtimes = ({ onShowtimeSelect }) => {
             </Box>
 
             <Box style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-              {theater.timings.map((time, i) => (
-                <Button
-                  key={i}
-                  variant="outlined"
-                  onClick={() => onShowtimeSelect({ theater: theater.name, time })}
-                  style={{ borderColor: "#2E7D32", color: "#2E7D32", borderRadius: "20px", fontWeight: "bold" }}
-                >
-                  {time}
-                </Button>
-              ))}
+              {theater.timings.map((time, i) => {
+                const isPastTime = parse(time, "hh:mm a", new Date()) < new Date();
+                return (
+                  <Button
+                    key={i}
+                    variant="outlined"
+                    disabled={isPastTime}
+                    onClick={() => !isPastTime && onShowtimeSelect({ theater: theater.name, time })}
+                    style={{
+                      borderColor: isPastTime ? "gray" : "#2E7D32",
+                      color: isPastTime ? "gray" : "#2E7D32",
+                      borderRadius: "20px",
+                      fontWeight: "bold",
+                      opacity: isPastTime ? 0.5 : 1,
+                    }}
+                  >
+                    {time}
+                  </Button>
+                );
+              })}
             </Box>
 
             <Typography style={{ color: "gray", marginTop: "5px" }}>

@@ -27,7 +27,7 @@ export const deleteUser =  async(id)=>{
     const response  = await axiosInstance.delete(`/auth/admin/user/${userId}`)
     console.log(response);
   } catch (errors) {
-    console.log(error)
+    console.log(error)  
   }
 }
 export const editUser = async (userId, editData) => {
