@@ -12,6 +12,7 @@ export const slideMovies = async () => {
 export const recList = async () => {
   try {
     const response = await axiosInstance.get("/movie/recMovies");
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.log(error);

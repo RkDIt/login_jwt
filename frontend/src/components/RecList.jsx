@@ -85,7 +85,7 @@ const RecList = () => {
             >
               <img
                 src={movie.poster_path}
-                alt={movie.name}
+                alt={movie.title}
                 className="w-full h-95 object-cover"
               />
               <button
@@ -115,11 +115,11 @@ const RecList = () => {
                       overflow: "hidden",
                     }}
                   >
-                    {movie.name}
+                    {movie.title}
                     <span
                       className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black"
                       style={{
-                        display: movie.name.length > 20 ? "block" : "none",
+                       display: movie.title.length > 20 ? "block" : "none",
                       }}
                     />
                   </h3>
