@@ -10,8 +10,10 @@ const movieSchema = new mongoose.Schema({
   overview: { type: String, required: true },
   backdrop_path: { type: String, required: true },
   poster_path: { type: String, required: true },
+  price: { type: Number, required: true, min: 0 },
   release_date: { type: String, required: true },
-  vote_average: { type: String, required: true },
+  vote_average: { type: Number, required: true },
+  vote_count:{type:Number, required: true}
 });
 
 const Movie = mongoose.model("Movie", movieSchema);

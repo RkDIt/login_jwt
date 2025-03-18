@@ -16,6 +16,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { Search } from "lucide-react";
 
 const roleLabels = {
   user: "User",
@@ -32,6 +33,7 @@ const AdminUserTable = () => {
     role: "user",
   });
   const [originalData, setOriginalData] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -103,6 +105,13 @@ const AdminUserTable = () => {
 
   const hasChanges = JSON.stringify(editData) !== JSON.stringify(originalData);
 
+  // Filter users based on search term
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Box sx={{ p: 4, display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Header Section */}
@@ -116,6 +125,17 @@ const AdminUserTable = () => {
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
           Manage Users
         </Typography>
+
+        {/* Search Input */}
+        <TextField
+          variant="outlined"
+          size="small"
+          placeholder="Search Users"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          sx={{ backgroundColor: "white", borderRadius: "4px" }}
+        />
+
         <Box sx={{ display: "flex", gap: 2 }}>
           {isEditing ? (
             <>
@@ -178,91 +198,101 @@ const AdminUserTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users
-              .filter((user) => user.role !== "admin") // Exclude admins from the list
-              .map((user) => (
-                <TableRow
-                  key={user._id}
-                  onClick={() => !isEditing && setSelectedUser(user._id)}
-                  sx={{
-                    cursor: isEditing ? "not-allowed" : "pointer",
-                    transition: "all 0.3s ease-in-out",
-                    background:
-                      selectedUser === user._id
-                        ? "rgba(0, 123, 255, 0.2)"
-                        : "transparent",
-                    "&:hover": {
-                      background: isEditing
-                        ? "transparent"
-                        : "rgba(0, 123, 255, 0.1)",
-                      boxShadow:
+            {filteredUsers.length > 0 ? (
+              filteredUsers
+                .filter((user) => user.role !== "admin") // Exclude admins from the list
+                .map((user) => (
+                  <TableRow
+                    key={user._id}
+                    onClick={() => !isEditing && setSelectedUser(user._id)}
+                    sx={{
+                      cursor: isEditing ? "not-allowed" : "pointer",
+                      transition: "all 0.3s ease-in-out",
+                      background:
                         selectedUser === user._id
-                          ? "0px 0px 8px rgba(0, 123, 255, 0.5)"
-                          : "none",
-                    },
-                  }}
-                >
-                  <TableCell align="center">
-                    <Radio
-                      checked={selectedUser === user._id}
-                      onChange={() => !isEditing && setSelectedUser(user._id)}
-                      color="primary"
-                      disabled={isEditing}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {isEditing && selectedUser === user._id ? (
-                      <TextField
-                        value={editData.name}
-                        onChange={(e) =>
-                          setEditData({ ...editData, name: e.target.value })
-                        }
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                          ? "rgba(0, 123, 255, 0.2)"
+                          : "transparent",
+                      "&:hover": {
+                        background: isEditing
+                          ? "transparent"
+                          : "rgba(0, 123, 255, 0.1)",
+                        boxShadow:
+                          selectedUser === user._id
+                            ? "0px 0px 8px rgba(0, 123, 255, 0.5)"
+                            : "none",
+                      },
+                    }}
+                  >
+                    <TableCell align="center">
+                      <Radio
+                        checked={selectedUser === user._id}
+                        onChange={() => !isEditing && setSelectedUser(user._id)}
+                        color="primary"
+                        disabled={isEditing}
                       />
-                    ) : (
-                      user.name
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {isEditing && selectedUser === user._id ? (
-                      <TextField
-                        value={editData.email}
-                        onChange={(e) =>
-                          setEditData({ ...editData, email: e.target.value })
-                        }
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        sx={{ backgroundColor: "white", borderRadius: "4px" }}
-                      />
-                    ) : (
-                      user.email
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {isEditing && selectedUser === user._id ? (
-                      <Select
-                        value={editData.role}
-                        onChange={(e) =>
-                          setEditData({ ...editData, role: e.target.value })
-                        }
-                        variant="outlined"
-                        fullWidth
-                        size="small"
-                        sx={{ backgroundColor: "white", borderRadius: "4px" }}
-                      >
-                        <MenuItem value="user">User</MenuItem>
-                        <MenuItem value="subadmin">Admin</MenuItem>
-                      </Select>
-                    ) : (
-                      roleLabels[user.role] || user.role
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing && selectedUser === user._id ? (
+                        <TextField
+                          value={editData.name}
+                          onChange={(e) =>
+                            setEditData({ ...editData, name: e.target.value })
+                          }
+                          variant="outlined"
+                          fullWidth
+                          size="small"
+                          sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                        />
+                      ) : (
+                        user.name
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing && selectedUser === user._id ? (
+                        <TextField
+                          value={editData.email}
+                          onChange={(e) =>
+                            setEditData({ ...editData, email: e.target.value })
+                          }
+                          variant="outlined"
+                          fullWidth
+                          size="small"
+                          sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                        />
+                      ) : (
+                        user.email
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing && selectedUser === user._id ? (
+                        <Select
+                          value={editData.role}
+                          onChange={(e) =>
+                            setEditData({ ...editData, role: e.target.value })
+                          }
+                          variant="outlined"
+                          fullWidth
+                          size="small"
+                          sx={{ backgroundColor: "white", borderRadius: "4px" }}
+                        >
+                          <MenuItem value="user">User</MenuItem>
+                          <MenuItem value="subadmin">Admin</MenuItem>
+                        </Select>
+                      ) : (
+                        roleLabels[user.role] || user.role
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                  <Typography variant="body1" color="textSecondary">
+                    No users found
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>

@@ -16,6 +16,7 @@ import UserManage from "../pages/AdminPages/UserManage.jsx";
 import MovieInfo from "../pages/MovieInfo.jsx";
 import BookingPage from "../pages/BookingPage.jsx";
 import Receipt from "../components/Receipt.jsx"
+import AddMovies from "../pages/AdminPages/AddMovies.jsx";
 
 
 const isAuthenticated = () => !!localStorage.getItem("token");
@@ -69,6 +70,8 @@ const AppRoutes = () => {
       {/* Admin & Subadmin Protected Routes */}
       <Route element={<PrivateRoute allowedRoles={["admin", "subadmin"]} />}>
         <Route path="/admin" element={<AdminPanel />} />
+        <Route path="/movies" element={<AddMovies/>} />
+
         <Route path="/admin/users" element={<UserManage />} />
       </Route>
 

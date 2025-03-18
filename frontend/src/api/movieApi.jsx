@@ -1,3 +1,4 @@
+import { Try } from "@mui/icons-material";
 import axiosInstance from "./axiosInstance";
 
 export const slideMovies = async () => {
@@ -27,6 +28,15 @@ export const movieDetails = async (movieId) => {
   }
 };
 
+export const allMovies = async () => {
+  try {
+    const response = await  axiosInstance.get("/movie/allMovies")
+    return response.data;
+  } catch (error) {
+    console.log(error)
+  }
+};
+
 export const addOrder = async ({
   userId,
   movieId,
@@ -52,5 +62,16 @@ export const addOrder = async ({
       "Error creating order:",
       error.response?.data || error.message
     );
+  }
+};
+
+
+export const addMovie = async (movieData) => {
+  try {
+    const response = await axiosInstance.post("/movie/addMovie", movieData);
+    return response.data;
+  } catch (error) {
+    console.error("Error adding movie:", error);
+    throw error;
   }
 };
