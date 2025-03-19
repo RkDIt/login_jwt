@@ -30,10 +30,10 @@ export const movieDetails = async (movieId) => {
 
 export const allMovies = async () => {
   try {
-    const response = await  axiosInstance.get("/movie/allMovies")
+    const response = await axiosInstance.get("/movie/allMovies");
     return response.data;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
@@ -43,6 +43,7 @@ export const addOrder = async ({
   numTickets,
   ticketType,
   totalAmount,
+  showtime,
 }) => {
   try {
     const response = await axiosInstance.post(
@@ -53,6 +54,7 @@ export const addOrder = async ({
         numTickets,
         ticketType,
         totalAmount,
+        showtime,
       }
     );
     console.log("Order created successfully:", response.data);
@@ -65,13 +67,33 @@ export const addOrder = async ({
   }
 };
 
-
 export const addMovie = async (movieData) => {
   try {
     const response = await axiosInstance.post("/movie/addMovie", movieData);
     return response.data;
   } catch (error) {
     console.error("Error adding movie:", error);
+    throw error;
+  }
+};
+
+export const orders = async () => {
+  try {
+    const response = await axiosInstance.get("/movie/orders");
+    console.log(response);
+    return response.data.orders;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const userOrders = async (userId) => {
+  try {
+     const response = await axiosInstance.get(`movie/userOrders?userId=${userId}`);
+    console.log(response)
+    return response.data.orders;
+  } catch (error) {
     throw error;
   }
 };

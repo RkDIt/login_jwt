@@ -72,13 +72,28 @@ const getMovieControl = async (req, res) => {
   }
 };
 
-
 const addMovieControl = async (req, res) => {
   try {
-    const { title, overview, backdrop_path, poster_path, release_date, price, vote_average, vote_count } = req.body;
+    const {
+      title,
+      overview,
+      backdrop_path,
+      poster_path,
+      release_date,
+      price,
+      vote_average,
+      vote_count,
+    } = req.body;
 
     // Validate required fields
-    if (!title || !overview || !backdrop_path || !poster_path || !release_date || !price) {
+    if (
+      !title ||
+      !overview ||
+      !backdrop_path ||
+      !poster_path ||
+      !release_date ||
+      !price
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -88,10 +103,14 @@ const addMovieControl = async (req, res) => {
     const voteCount = parseInt(vote_count) || 0;
 
     if (isNaN(moviePrice) || moviePrice <= 0) {
-      return res.status(400).json({ message: "Price must be a positive number" });
+      return res
+        .status(400)
+        .json({ message: "Price must be a positive number" });
     }
     if (avgVote < 0 || avgVote > 10) {
-      return res.status(400).json({ message: "Vote average must be between 0 and 10" });
+      return res
+        .status(400)
+        .json({ message: "Vote average must be between 0 and 10" });
     }
     if (voteCount < 0) {
       return res.status(400).json({ message: "Vote count cannot be negative" });
@@ -120,10 +139,12 @@ const addMovieControl = async (req, res) => {
 };
 
 
+
 module.exports = {
   slideMovies,
   topRec,
   getMovieControl,
   getAllMovies,
   addMovieControl,
+  
 };

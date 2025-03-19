@@ -5,7 +5,7 @@ const messages = require("../utils/responseMsg");
 const orderConfirm = async (req, res) => {
   try {
     const movieId = req.params.id;
-    const { userId, totalAmount, numTickets, ticketType, paymentStatus } =
+    const { userId, totalAmount, numTickets, ticketType, paymentStatus ,showtime} =
       req.body;
 
     const orderDetails = await addOrderService.addOrder({
@@ -14,11 +14,42 @@ const orderConfirm = async (req, res) => {
       totalAmount,
       numTickets,
       ticketType,
-      paymentStatus
+      paymentStatus,
+      showtime,
     });
+
     return Response.success(res, { status: 200, data: orderDetails });
-  } catch (error) {}
+  } catch (error) {
+    throw Error(error);
+  }
 };
 
-module.exports = { orderConfirm };
-``
+const ordersControl = async (req, res) => {
+  try {
+    const orders = await addOrderService.allOrders();
+    res.status(200).json({ message: "OK", orders });
+  } catch (error) {
+    throw Error(error);
+  }
+};
+
+const userOrderControl = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    console.log("userId",userId)
+
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const orders = await addOrderService.userOrders(userId); 
+
+    return res.status(200).json({ success: true, orders });
+  } catch (error) {
+    console.error("Error fetching user orders:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+module.exports = { orderConfirm, ordersControl,userOrderControl };

@@ -82,4 +82,5 @@ const addMovie = async (movieData) => {
 };
 
 
+
 module.exports = { slideMovies, recMovies, getMovie, allMovies, addMovie };

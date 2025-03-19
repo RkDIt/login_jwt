@@ -1,7 +1,15 @@
 const Order = require("../models/Order");
 const Movie = require("../models/Movie");
 
-const addOrder = async ({ userId, movieId, totalAmount, numTickets, ticketType, paymentStatus }) => {
+const addOrder = async ({
+  userId,
+  movieId,
+  totalAmount,
+  numTickets,
+  ticketType,
+  paymentStatus,
+  showtime,
+}) => {
   try {
     const movie = await Movie.findById(movieId);
     if (!movie) {
@@ -15,7 +23,8 @@ const addOrder = async ({ userId, movieId, totalAmount, numTickets, ticketType, 
       numTickets,
       ticketType,
       paymentStatus,
-      orderDate: new Date(), 
+      showtime,
+      orderDate: new Date(),
     });
 
     const savedOrder = await newOrder.save();
@@ -26,4 +35,22 @@ const addOrder = async ({ userId, movieId, totalAmount, numTickets, ticketType, 
   }
 };
 
-module.exports = { addOrder };
+const allOrders = async () => {
+  const orders = await Order.find().populate("userId movieId");
+  console.log(orders);
+  return orders;
+};
+
+const userOrders = async (userId) => {
+  try {
+    const orders = await Order.find({ userId }).populate("movieId"); // Fetch orders for the specific user
+    if (!orders.length) {
+      throw new Error("No orders found for this user");
+    }
+    return orders;
+  } catch (error) {
+    throw new Error("Error fetching user orders: " + error.message);
+  }
+};
+
+module.exports = { addOrder, allOrders, userOrders };

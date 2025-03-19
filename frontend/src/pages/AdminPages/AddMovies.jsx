@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AdminSidePanel from "../../components/adminSidePan";
-import { allMovies, addMovie } from "../../api/movieApi";
+import { allMovies, addMovie } from "../../api/movieApi"; // Import deleteMovie function
+
 import {
   Button,
   TextField,
@@ -14,7 +15,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import { FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 
 const AddMovies = () => {
   const [movies, setMovies] = useState([]);
@@ -89,43 +90,42 @@ const AddMovies = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     let formattedValue = value;
-  
+
+    // Capitalize the first letter for title and overview
     if (name === "title" || name === "overview") {
       formattedValue = value.charAt(0).toUpperCase() + value.slice(1);
     }
-  
+
+    // Ensure vote_average does not exceed 10
     if (name === "vote_average") {
-      // Allow only numbers with up to 2 decimal places and max 10
-      if (/^\d{0,2}(\.\d{0,2})?$/.test(value) || value === "") {
-        const numericValue = parseFloat(value);
-        if (numericValue > 10) {
-          formattedValue = "10.00"; // Limit max to 10
-        } else {
-          formattedValue = value;
-        }
-      } else {
-        return; // Prevent invalid input
+      const numericValue = parseFloat(value);
+      if (!isNaN(numericValue)) {
+        formattedValue = Math.min(numericValue, 10); // Cap the value at 10
       }
     }
-  
+
     setMovie({ ...movie, [name]: formattedValue });
   };
-  
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {   
     e.preventDefault();
     if (validateForm()) {
-      const movieData = { ...movie };
+      const movieData = {
+        ...movie,
+        vote_average: parseFloat(movie.vote_average).toFixed(2),
+      };
 
       try {
-        await addMovie(movieData);
+        await addMovie(movieData); // Send request to backend
         alert("Movie added successfully!");
 
+        // Refresh movie list after adding
         setMovies((prevMovies) => [...prevMovies, movieData]);
         setFilteredMovies((prevMovies) => [...prevMovies, movieData]);
 
+        // Reset form fields
         setMovie({
           title: "",
           overview: "",
@@ -147,6 +147,43 @@ const AddMovies = () => {
   const handleSelectMovie = (movie) => {
     setSelectedMovie(movie);
     setMovie(movie);
+  };
+
+  const handleCancelEdit = () => {
+    setSelectedMovie(null);
+    setMovie({
+      title: "",
+      overview: "",
+      backdrop_path: "",
+      poster_path: "",
+      release_date: "",
+      price: "",
+      vote_count: "",
+      vote_average: "",
+    });
+  };
+
+  const handleDeleteMovie = async (movieId) => {
+    // Show confirmation prompt
+    const isConfirmed = window.confirm("Are you sure you want to delete this movie?");
+    if (!isConfirmed) return; // Exit if the user cancels
+
+    try {
+      await deleteMovie(movieId); // Call the delete API
+      alert("Movie deleted successfully!");
+
+      // Update the movie list after deletion
+      const updatedMovies = movies.filter((movie) => movie._id !== movieId);
+      setMovies(updatedMovies);
+      setFilteredMovies(updatedMovies);
+
+      // Clear the form if the deleted movie was being edited
+      if (selectedMovie && selectedMovie._id === movieId) {
+        handleCancelEdit();
+      }
+    } catch (error) {
+      alert("Failed to delete movie. Please try again.");
+    }
   };
 
   return (
@@ -205,7 +242,10 @@ const AddMovies = () => {
                     <TableCell align="right">
                       <Button
                         color="error"
-                        onClick={() => console.log("Delete", movie._id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click event
+                          handleDeleteMovie(movie._id);
+                        }}
                       >
                         <FaTrash />
                       </Button>
@@ -219,13 +259,28 @@ const AddMovies = () => {
       </Box>
 
       {/* Movie Form */}
-      <Box flex={1} display="flex" justifyContent="center" alignItems="center" p={3}>
+      <Box
+        flex={1}
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        p={3}
+      >
         <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: "500px" }}>
           <Typography variant="h5" gutterBottom>
             {selectedMovie ? "Edit Movie" : "Add Movie"}
           </Typography>
           <form onSubmit={handleSubmit}>
-            {["title", "overview", "backdrop_path", "poster_path", "release_date", "price", "vote_count"].map((field) => (
+            {[
+              "title",
+              "overview",
+              "backdrop_path",
+              "poster_path",
+              "release_date",
+              "price",
+              "vote_count",
+              "vote_average",
+            ].map((field) => (
               <TextField
                 key={field}
                 fullWidth
@@ -236,20 +291,31 @@ const AddMovies = () => {
                 margin="normal"
                 error={!!errors[field]}
                 helperText={errors[field] || ""}
+                type={field === "vote_average" ? "number" : "text"}
+                inputProps={
+                  field === "vote_average"
+                    ? { min: 1, max: 10, step: "0.01" }
+                    : {}
+                }
               />
             ))}
-            <TextField
-              fullWidth
-              label="VOTE AVERAGE (1-10)"
-              name="vote_average"
-              value={movie.vote_average}
-              onChange={handleChange}
-              margin="normal"
-              error={!!errors.vote_average}
-              helperText={errors.vote_average || ""}
-            />
             <Box display="flex" justifyContent="space-between" mt={2}>
-              <Button type="submit" variant="contained" color="primary">
+              {selectedMovie && (
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  startIcon={<FaTimes />}
+                  onClick={handleCancelEdit}
+                >
+                  Cancel
+                </Button>
+              )}
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                startIcon={selectedMovie ? <FaSave /> : null}
+              >
                 {selectedMovie ? "Update Movie" : "Submit Movie"}
               </Button>
             </Box>

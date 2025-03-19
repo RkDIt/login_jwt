@@ -23,36 +23,36 @@ const BookingDetails = ({ showtime }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { movieName, price, movieId } = location.state || {};
-
+  
   const [numTickets, setNumTickets] = useState(1);
   const [ticketType, setTicketType] = useState("m-ticket");
   const [donate, setDonate] = useState(false);
-
+  
   const baseTotal = price * numTickets;
   const convenienceFee = Math.round(baseTotal * 0.17);
   const donationAmount = donate ? numTickets * 1 : 0;
   const amountPayable = baseTotal + convenienceFee + donationAmount;
-
+  
   const handlePayNow = async () => {
     const userId = localStorage.getItem("userId");
-  
+
     const orderDetails = {
       userId,
       movieId,
       totalAmount: amountPayable,
       numTickets,
       ticketType,
+      showtime,
     };
-  
+
     try {
       const orderResponse = await addOrder(orderDetails);
-      const transactionId = orderResponse.data._id; 
-      navigate("/receipt", { state: { transactionId,movieName } }); 
+      const transactionId = orderResponse.data._id;
+      navigate("/receipt", { state: { transactionId, movieName } });
     } catch (error) {
       console.error("Payment failed:", error);
     }
   };
-  
 
   const handleCancel = () => {
     navigate(`/movieInfo/${movieId}`);
