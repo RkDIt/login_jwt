@@ -39,7 +39,7 @@ export default function LoginPage() {
           }
         );
         const token = response.data.data.token;
-
+        
         console.log("Login  successful :  ", response.data);
 
         axios.defaults.headers.common["Authorization"] = `Bearer  ${token}`;
