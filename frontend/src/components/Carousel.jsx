@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { slideMovies } from "../api/movieApi";
+import { useNavigate } from "react-router-dom";
+
 
 const Carousel = () => {
   const [movies, setMovies] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -56,7 +59,7 @@ const Carousel = () => {
         <h3 className="text-[30px] md:text-[80px] font-extrabold leading-tight">{currentMovie.title}</h3>
         <div className="flex items-center gap-4">
           <p className="text-lg md:text-xl">⭐ {parseFloat(currentMovie.vote_average).toFixed(1)} | {new Date(currentMovie.release_date).getFullYear()}</p>
-          <button className="bg-red-500 px-6 py-3 rounded-lg text-lg md:text-xl hover:bg-red-700 transition duration-300">Book Now</button>
+          <button className="bg-red-500 px-6 py-3 rounded-lg text-lg md:text-xl hover:bg-red-700 transition duration-300" onClick={()=>navigate(`/movieInfo/${currentMovie._id}`)}>See Details</button>
         </div>
       </div>
     </div>

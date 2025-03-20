@@ -42,7 +42,7 @@ const SignUp = () => {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          "http://localhost:8007/api/auth/register",
+          `${import.meta.env.VITE_BASE_URL}/api/auth/register`,
           values,
           {
             headers: {

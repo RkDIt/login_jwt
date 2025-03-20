@@ -32,7 +32,7 @@ export default function LoginPage() {
 
       try {
         const response = await axios.post(
-          "http://localhost:8007/api/auth/login",
+          `${import.meta.env.VITE_BASE_URL}/api/auth/login`,
           values,
           {
             headers: { "Content-Type": "application/json" },
