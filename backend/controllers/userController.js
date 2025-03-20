@@ -1,5 +1,5 @@
 import Response from "../utils/apiResponse.js";
-import userServices from "../services/userServices.js";
+import { currentUser, usersList, deleteUser, editUser, isEmailTaken } from "../services/userServices.js";
 import messages from "../utils/responseMsg.js";
 
 export const getUser = async (req, res) => {
@@ -14,7 +14,7 @@ export const getUser = async (req, res) => {
       });
     }
 
-    const users = await userServices.currentUser({ _id: userId });
+    const users = await currentUser({ _id: userId });
 
     if (!users) {
       return Response.error(res, { status: 404, message: messages.NOT_FOUND });
@@ -38,10 +38,10 @@ export const getUser = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   const adminId = req.user.id;
   try {
-    const user = await userServices.currentUser({ _id: adminId });
+    const user = await currentUser({ _id: adminId });
     console.log("Admin user", user);
 
-    const usersList = await userServices.usersList({ _id: adminId });
+    const usersList = await usersList({ _id: adminId });
     if (!user) {
       return Response.error(res, { status: 404, message: messages.NOT_FOUND });
     }
@@ -56,7 +56,7 @@ export const deleteUserControl = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const delUser = await userServices.deleteUser(id);
+    const delUser = await deleteUser(id);
     console.log("Deleted User:", delUser);
 
     return res.status(200).json({ success: true, message: delUser });
@@ -73,7 +73,7 @@ export const editUserControl = async (req, res) => {
 
   try {
     // Check if email already exists
-    const emailExists = await userServices.isEmailTaken(email, id);
+    const emailExists = await isEmailTaken(email, id);
     if (emailExists) {
       return res.status(400).json({
         success: false,
@@ -82,7 +82,7 @@ export const editUserControl = async (req, res) => {
     }
 
     // Update user
-    const updatedUser = await userServices.editUser(id, { name, email, role });
+    const updatedUser = await editUser(id, { name, email, role });
 
     return res.status(200).json({
       success: true,

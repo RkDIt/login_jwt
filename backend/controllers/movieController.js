@@ -1,10 +1,17 @@
 import Response from "../utils/apiResponse.js";
-import movieService from "../services/MovieServices.js";
+import {
+  slideMovies,
+  recMovies,
+  getMovie,
+  allMovies,
+  addMovie,
+  delMovie,
+} from "../services/MovieServices.js";
 import messages from "../utils/responseMsg.js";
 
 export const slideMovies = async (req, res) => {
   try {
-    const data = await movieService.slideMovies();
+    const data = await slideMovies();
 
     if (!data || data.length === 0) {
       return Response.error(res, {
@@ -30,7 +37,7 @@ export const slideMovies = async (req, res) => {
 
 export const topRec = async (req, res) => {
   try {
-    const data = await movieService.recMovies();
+    const data = await recMovies();
     return Response.success(res, { status: 200, data });
   } catch (error) {
     console.error("Error in topRec:", error);
@@ -39,7 +46,7 @@ export const topRec = async (req, res) => {
 
 export const getAllMovies = async (req, res) => {
   try {
-    const data = await movieService.allMovies();
+    const data = await allMovies();
     return Response.success(res, { status: 200, data });
   } catch (error) {
     console.error("Error in getAllMovies:", error);
@@ -50,7 +57,7 @@ export const getMovieControl = async (req, res) => {
   const { id: movieId } = req.params;
 
   try {
-    const movieDetails = await movieService.getMovie(movieId);
+    const movieDetails = await getMovie(movieId);
     return res.status(200).json({ success: true, data: movieDetails });
   } catch (error) {
     console.error("Error fetching movie:", error.message);
@@ -100,7 +107,7 @@ export const addMovieControl = async (req, res) => {
       vote_count: voteCount,
     };
 
-    const movie = await movieService.addMovie(newMovie);
+    const movie = await addMovie(newMovie);
 
     res.status(201).json({ message: "Movie added successfully", movie });
   } catch (error) {
@@ -112,7 +119,7 @@ export const addMovieControl = async (req, res) => {
 export const deleteMovie = async (req, res) => {
   try {
     const movieId = req.params.id;
-    const deletedMovie = await movieService.delMovie(movieId);
+    const deletedMovie = await delMovie(movieId);
 
     if (!deletedMovie) {
       return res.status(404).json({ message: "Movie not found" });

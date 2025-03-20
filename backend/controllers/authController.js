@@ -1,10 +1,10 @@
 import Response from "../utils/apiResponse.js";
-import authService from "../services/authServices.js";
+import { registerUser, loginUser } from "../services/authServices.js";
 import messages from "../utils/responseMsg.js";
 
 export const registerUser = async (req, res) => {
     try {
-        const data = await authService.registerUser(req.body);
+        const data = await registerUser(req.body);
         return Response.success(res, { status: 201, data });
     } catch (error) {
         console.error("Error in registerUser:", error);
@@ -17,7 +17,7 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
     try {
-        const data = await authService.loginUser(req.body);
+        const data = await loginUser(req.body);
         return Response.success(res, { status: 200, data });
     } catch (error) {
         console.error("Error in loginUser:", error);
