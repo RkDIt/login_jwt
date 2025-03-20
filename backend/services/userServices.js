@@ -1,5 +1,5 @@
-const User = require("../models/User");
-const messages = require("../utils/responseMsg");
+import User from "../models/User.js";
+import messages from "../utils/responseMsg.js";
 
 const currentUser = async ({ _id }) => {
   console.log("Received _id in currentUser:", _id); // ✅ Log 1
@@ -32,7 +32,9 @@ const currentUser = async ({ _id }) => {
 
 const usersList = async ({ _id }) => {
   try {
-    const users = await User.find({ _id: { $ne: _id } }).select("_id name email role");
+    const users = await User.find({ _id: { $ne: _id } }).select(
+      "_id name email role"
+    );
     console.log("Fetched users (excluding current user):", users);
 
     return users;
@@ -79,4 +81,4 @@ const editUser = async (id, updateData) => {
   }
 };
 
-module.exports = { currentUser, usersList, deleteUser, editUser, isEmailTaken };
+export { currentUser, usersList, deleteUser, editUser, isEmailTaken };

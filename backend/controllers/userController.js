@@ -1,9 +1,8 @@
-const Response = require("../utils/apiResponse");
-const userServices = require("../services/userServices");
-const messages = require("../utils/responseMsg");
+import Response from "../utils/apiResponse.js";
+import userServices from "../services/userServices.js";
+import messages from "../utils/responseMsg.js";
 
-const getUser = async (req, res) => {
-  // console.log("req.user", req.user);
+export const getUser = async (req, res) => {
   console.log("req.params.id", req.params.id);
 
   try {
@@ -36,7 +35,7 @@ const getUser = async (req, res) => {
   }
 };
 
-const getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   const adminId = req.user.id;
   try {
     const user = await userServices.currentUser({ _id: adminId });
@@ -53,11 +52,11 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const deleteUserControl = async (req, res) => {
-  const { id } = req.params; // Use "id" to match the route parameter
+export const deleteUserControl = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const delUser = await userServices.deleteUser(id); // Pass only the ID
+    const delUser = await userServices.deleteUser(id);
     console.log("Deleted User:", delUser);
 
     return res.status(200).json({ success: true, message: delUser });
@@ -67,7 +66,7 @@ const deleteUserControl = async (req, res) => {
   }
 };
 
-const editUserControl = async (req, res) => {
+export const editUserControl = async (req, res) => {
   const { id } = req.params;
   const { name, email, role } = req.body;
   console.log("Updating User:", { id, name, email, role });
@@ -98,5 +97,3 @@ const editUserControl = async (req, res) => {
     });
   }
 };
-
-module.exports = { getUser, getAllUsers, deleteUserControl, editUserControl };

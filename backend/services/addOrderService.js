@@ -1,7 +1,7 @@
-const Order = require("../models/Order");
-const Movie = require("../models/Movie");
+import Order from "../models/Order.js";
+import Movie from "../models/Movie.js";
 
-const addOrder = async ({
+export const addOrder = async ({
   userId,
   movieId,
   totalAmount,
@@ -28,22 +28,21 @@ const addOrder = async ({
     });
 
     const savedOrder = await newOrder.save();
-
     return savedOrder;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-const allOrders = async () => {
+export const allOrders = async () => {
   const orders = await Order.find().populate("userId movieId");
   console.log(orders);
   return orders;
 };
 
-const userOrders = async (userId) => {
+export const userOrders = async (userId) => {
   try {
-    const orders = await Order.find({ userId }).populate("movieId"); // Fetch orders for the specific user
+    const orders = await Order.find({ userId }).populate("movieId");
     if (!orders.length) {
       throw new Error("No orders found for this user");
     }
@@ -52,5 +51,3 @@ const userOrders = async (userId) => {
     throw new Error("Error fetching user orders: " + error.message);
   }
 };
-
-module.exports = { addOrder, allOrders, userOrders };

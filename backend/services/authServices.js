@@ -1,7 +1,7 @@
-const User = require("../models/User");
-const { hashedPassword, comparePassword } = require("../utils/passwordHasher");
-const generateToken = require("../utils/jwtTokenGen");
-const messages = require("../utils/responseMsg");
+import User from "../models/User.js";
+import { hashedPassword, comparePassword } from "../utils/passwordHasher.js";
+import generateToken from "../utils/jwtTokenGen.js";
+import messages from "../utils/responseMsg.js";
 
 const registerUser = async ({ name, email, password, role }) => {
     if (!name || !email || !password) {
@@ -56,4 +56,4 @@ const loginUser = async ({ email, password }) => {
     };
 };
 
-module.exports = { registerUser, loginUser };
+export { registerUser, loginUser };

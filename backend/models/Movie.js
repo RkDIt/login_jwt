@@ -1,11 +1,10 @@
-const mongoose = require("mongoose");
-const { customAlphabet } = require("nanoid");
+import mongoose from "mongoose";
+import { customAlphabet } from "nanoid";
 
-const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12); 
+const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12);
 
 const movieSchema = new mongoose.Schema({
-  _id: { type: String, default: () => nanoid() }, 
-  // id: { type: Number, require: true },
+  _id: { type: String, default: () => nanoid() },
   title: { type: String, required: true },
   overview: { type: String, required: true },
   backdrop_path: { type: String, required: true },
@@ -13,8 +12,9 @@ const movieSchema = new mongoose.Schema({
   price: { type: Number, required: true, min: 0 },
   release_date: { type: String, required: true },
   vote_average: { type: Number, required: true },
-  vote_count:{type:Number, required: true}
+  vote_count: { type: Number, required: true },
 });
 
 const Movie = mongoose.model("Movie", movieSchema);
-module.exports = Movie;
+
+export default Movie;

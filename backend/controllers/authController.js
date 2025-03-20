@@ -1,8 +1,8 @@
-const Response = require("../utils/apiResponse");
-const authService = require("../services/authServices");
-const messages = require("../utils/responseMsg");
+import Response from "../utils/apiResponse.js";
+import authService from "../services/authServices.js";
+import messages from "../utils/responseMsg.js";
 
-const registerUser = async (req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const data = await authService.registerUser(req.body);
         return Response.success(res, { status: 201, data });
@@ -15,8 +15,7 @@ const registerUser = async (req, res) => {
     }
 };
 
-const loginUser = async (req, res) => {
-
+export const loginUser = async (req, res) => {
     try {
         const data = await authService.loginUser(req.body);
         return Response.success(res, { status: 200, data });
@@ -28,5 +27,3 @@ const loginUser = async (req, res) => {
         });
     }
 };
-
-module.exports = { registerUser, loginUser };

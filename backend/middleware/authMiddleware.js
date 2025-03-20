@@ -1,8 +1,8 @@
-const jwt = require("jsonwebtoken");
-const Response = require("../utils/apiResponse");
-const messages = require("../utils/responseMsg");
+import jwt from "jsonwebtoken";
+import Response from "../utils/apiResponse.js";
+import messages from "../utils/responseMsg.js";
 
-const verifyToken = async (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   try {
     const token = req.header("Authorization")?.startsWith("Bearer ")
       ? req.header("Authorization").split(" ")[1]
@@ -13,8 +13,8 @@ const verifyToken = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; 
-    next(); 
+    req.user = decoded;
+    next();
   } catch (error) {
     console.error("JWT Verification Error:", error);
 
@@ -27,7 +27,8 @@ const verifyToken = async (req, res, next) => {
     }
   }
 };
-const authorizeRole = (allowedRoles) => {
+
+export const authorizeRole = (allowedRoles) => {
   return (req, res, next) => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ message: "Access Denied. Insufficient permissions." });
@@ -35,5 +36,3 @@ const authorizeRole = (allowedRoles) => {
     next();
   };
 };
-
-module.exports = { verifyToken,authorizeRole };

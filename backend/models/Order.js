@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-const { customAlphabet } = require("nanoid");
-const moment = require("moment");
+import mongoose from "mongoose";
+import { customAlphabet } from "nanoid";
+import moment from "moment";
 
 const nanoid = customAlphabet("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 12);
 
@@ -8,8 +8,8 @@ const OrderSchema = new mongoose.Schema({
   _id: { type: String, default: () => nanoid() },
   userId: { type: String, ref: "User", required: true },
   movieId: { type: String, ref: "Movie", required: true },
-  numTickets: { type: Number, require: true },
-  totalAmount: { type: Number, require: true },
+  numTickets: { type: Number, required: true },
+  totalAmount: { type: Number, required: true },
   ticketType: {
     type: String,
     enum: ["m-ticket", "box-office"],
@@ -21,9 +21,9 @@ const OrderSchema = new mongoose.Schema({
     default: "completed",
   },
   createdAt: { type: Number, default: () => moment().valueOf() },
-  showtime:{type:Object, require:true}
+  showtime: { type: Object, required: true },
 });
 
 const Order = mongoose.model("Order", OrderSchema);
 
-module.exports = Order;
+export default Order;
