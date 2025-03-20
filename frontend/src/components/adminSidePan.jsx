@@ -29,6 +29,7 @@ const AdminSidePanel = () => {
   const handleLogout = () => {
     localStorage.clear(); 
     navigate("/logout"); 
+    window.location.reload();
   };
 
   const menuItems = [
@@ -36,7 +37,7 @@ const AdminSidePanel = () => {
     { icon: Film, label: "Movies", path: "/movies" },
     { icon: Users, label: "Users", path: "/admin/users" },
     { icon: DollarSign, label: "Revenue", path: "/revenue" },
-    { icon: Bell, label: "Notifications", path: "/notifications" },
+    // { icon: Bell, label: "Notifications", path: "/notifications" },
   ];
 
   return (

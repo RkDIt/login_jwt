@@ -117,7 +117,7 @@ const AdminPanel = () => {
                   variant="contained"
                   color="success"
                   fullWidth
-                  onClick={() => console.log("Navigate to Analytics")}
+                  onClick={() => navigate("/revenue")}
                 >
                   Go to Analytics
                 </Button>
@@ -147,51 +147,15 @@ const AdminPanel = () => {
                   color="textSecondary"
                   sx={{ mb: 2 }}
                 >
-                  Configure system settings and preferences.
+                  Manage Movies Database
                 </Typography>
                 <Button
                   variant="contained"
                   color="warning"
                   fullWidth
-                  onClick={() => console.log("Navigate to Settings")}
+                  onClick={() => navigate("/movies")}
                 >
-                  Go to Settings
-                </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Notifications Card */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Card sx={{ height: "100%", borderRadius: "10px", boxShadow: 3 }}>
-              <CardContent>
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    mb: 2,
-                  }}
-                >
-                  <NotificationsIcon sx={{ fontSize: 40, color: "#d32f2f" }} />
-                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    Notifications
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{ mb: 2 }}
-                >
-                  View and manage system notifications.
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="error"
-                  fullWidth
-                  onClick={() => console.log("Navigate to Notifications")}
-                >
-                  Go to Notifications
+                  Manage Movies
                 </Button>
               </CardContent>
             </Card>
