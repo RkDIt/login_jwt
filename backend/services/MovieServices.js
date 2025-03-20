@@ -1,6 +1,6 @@
 import Movie from "../models/Movie.js";
 
-const slideMovies = async () => {
+const slideMovie = async () => {
   return await Movie.find().sort({ vote_average: -1 }).limit(3);
 };
 
@@ -108,7 +108,7 @@ const delMovie = async (id) => {
 };
 
 export {
-  slideMovies,
+  slideMovie,
   recMovies,
   getMovie,
   allMovies,

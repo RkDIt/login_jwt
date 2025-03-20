@@ -30,7 +30,7 @@ const currentUser = async ({ _id }) => {
   }
 };
 
-const usersList = async ({ _id }) => {
+const usersLists = async ({ _id }) => {
   try {
     const users = await User.find({ _id: { $ne: _id } }).select(
       "_id name email role"
@@ -81,4 +81,4 @@ const editUser = async (id, updateData) => {
   }
 };
 
-export { currentUser, usersList, deleteUser, editUser, isEmailTaken };
+export { currentUser, usersLists, deleteUser, editUser, isEmailTaken };

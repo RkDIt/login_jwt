@@ -1,6 +1,6 @@
 import Response from "../utils/apiResponse.js";
 import {
-  slideMovies,
+  slideMovie,
   recMovies,
   getMovie,
   allMovies,
@@ -11,7 +11,7 @@ import messages from "../utils/responseMsg.js";
 
 export const slideMovies = async (req, res) => {
   try {
-    const data = await slideMovies();
+    const data = await slideMovie();
 
     if (!data || data.length === 0) {
       return Response.error(res, {

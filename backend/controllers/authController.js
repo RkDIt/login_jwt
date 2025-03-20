@@ -2,7 +2,7 @@ import Response from "../utils/apiResponse.js";
 import { registerUser, loginUser } from "../services/authServices.js";
 import messages from "../utils/responseMsg.js";
 
-export const registerUser = async (req, res) => {
+export const registerUsers = async (req, res) => {
     try {
         const data = await registerUser(req.body);
         return Response.success(res, { status: 201, data });
@@ -15,7 +15,7 @@ export const registerUser = async (req, res) => {
     }
 };
 
-export const loginUser = async (req, res) => {
+export const loginUsers = async (req, res) => {
     try {
         const data = await loginUser(req.body);
         return Response.success(res, { status: 200, data });

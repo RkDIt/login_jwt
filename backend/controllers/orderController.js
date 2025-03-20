@@ -1,5 +1,5 @@
 import Response from "../utils/apiResponse.js";
-import addOrderService from "../services/addOrderService.js";
+import { addOrder, allOrders, userOrders } from "../services/addOrderService.js";
 import messages from "../utils/responseMsg.js";
 
 export const orderConfirm = async (req, res) => {
@@ -7,7 +7,7 @@ export const orderConfirm = async (req, res) => {
     const movieId = req.params.id;
     const { userId, totalAmount, numTickets, ticketType, paymentStatus, showtime } = req.body;
 
-    const orderDetails = await addOrderService.addOrder({
+    const orderDetails = await addOrder({
       userId,
       movieId,
       totalAmount,
@@ -25,7 +25,7 @@ export const orderConfirm = async (req, res) => {
 
 export const ordersControl = async (req, res) => {
   try {
-    const orders = await addOrderService.allOrders();
+    const orders = await allOrders();
     res.status(200).json({ message: "OK", orders });
   } catch (error) {
     throw new Error(error);
@@ -41,7 +41,7 @@ export const userOrderControl = async (req, res) => {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    const orders = await addOrderService.userOrders(userId);
+    const orders = await userOrders(userId);
 
     return res.status(200).json({ success: true, orders });
   } catch (error) {

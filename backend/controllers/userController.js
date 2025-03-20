@@ -1,5 +1,5 @@
 import Response from "../utils/apiResponse.js";
-import { currentUser, usersList, deleteUser, editUser, isEmailTaken } from "../services/userServices.js";
+import { currentUser, usersLists, deleteUser, editUser, isEmailTaken } from "../services/userServices.js";
 import messages from "../utils/responseMsg.js";
 
 export const getUser = async (req, res) => {
@@ -41,7 +41,7 @@ export const getAllUsers = async (req, res) => {
     const user = await currentUser({ _id: adminId });
     console.log("Admin user", user);
 
-    const usersList = await usersList({ _id: adminId });
+    const usersList = await usersLists({ _id: adminId });
     if (!user) {
       return Response.error(res, { status: 404, message: messages.NOT_FOUND });
     }
