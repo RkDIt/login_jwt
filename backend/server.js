@@ -8,22 +8,22 @@ import authRoutes from "./routes/authRoutes.js";
 import movieRoutes from "./routes/movieRoutes.js";
 
 const app = express();
-const FRONTEND_URL = config.url;
+// const FRONTEND_URL = config.url;
 connectDB();
 
 app.use(express.json());
 
-const corsOptions = {
-  origin: FRONTEND_URL,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-app.get("/test", (req, res) => {
-    res.json({ message: "Backend is running!" });
-  });
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+// const corsOptions = {
+//   origin: FRONTEND_URL,
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// };
+// app.get("/test", (req, res) => {
+//     res.json({ message: "Backend is running!" });
+//   });
+app.use(cors());
+// app.options("*", cors(corsOptions));
 app.use(helmet());
 app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
