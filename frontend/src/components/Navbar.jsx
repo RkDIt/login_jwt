@@ -146,9 +146,9 @@ const Navbar = () => {
             className="flex-shrink-0 cursor-pointer"
           >
             <img
-              src="../src/assets/pngwing.com.png"
+              src="https://upload.wikimedia.org/wikipedia/commons/7/75/Bookmyshow-logoid.png"
               alt="logo"
-              className="w-[120px] h-[6vh] md:w-full"
+              className="w-[100px] h-[5vh] md:w-full"
             />
           </a>
 
