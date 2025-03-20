@@ -1,4 +1,4 @@
-class apiResponse {
+class ApiResponse {
   success(res, data = { status: 200, message: "OK", data: {} }) {
     return res.status(data.status).json(data);
   }
@@ -8,4 +8,5 @@ class apiResponse {
   }
 }
 
-module.exports = new apiResponse();
+const responseInstance = new ApiResponse();
+export default responseInstance;
