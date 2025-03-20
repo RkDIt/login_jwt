@@ -1,8 +1,10 @@
+
 {
   "name": "jwt_login",
   "version": "1.0.0",
   "description": "This project uses jwt to sign a new user",
   "main": "index.js",
+  
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
@@ -14,7 +16,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/RkDIt/login_jwt/issues"
   },
