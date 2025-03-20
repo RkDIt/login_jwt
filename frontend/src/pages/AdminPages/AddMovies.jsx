@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminSidePanel from "../../components/adminSidePan";
-import { allMovies, addMovie } from "../../api/movieApi"; // Import deleteMovie function
+import { allMovies, addMovie,delMovie } from "../../api/movieApi"; // Import deleteMovie function
 
 import {
   Button,
@@ -61,6 +61,7 @@ const AddMovies = () => {
       )
     );
   }, [searchTerm, movies]);
+
 
   const validateForm = () => {
     let tempErrors = {};
@@ -164,27 +165,25 @@ const AddMovies = () => {
   };
 
   const handleDeleteMovie = async (movieId) => {
-    // Show confirmation prompt
+   
     const isConfirmed = window.confirm("Are you sure you want to delete this movie?");
-    if (!isConfirmed) return; // Exit if the user cancels
-
+    if (!isConfirmed) return;
+  
     try {
-      await deleteMovie(movieId); // Call the delete API
+      await delMovie(movieId);
       alert("Movie deleted successfully!");
-
-      // Update the movie list after deletion
-      const updatedMovies = movies.filter((movie) => movie._id !== movieId);
-      setMovies(updatedMovies);
-      setFilteredMovies(updatedMovies);
-
-      // Clear the form if the deleted movie was being edited
+  
+      setMovies((prevMovies) => prevMovies.filter((movie) => movie._id !== movieId));
+      setFilteredMovies((prevMovies) => prevMovies.filter((movie) => movie._id !== movieId));
+  
       if (selectedMovie && selectedMovie._id === movieId) {
-        handleCancelEdit();
+        setSelectedMovie(null);
       }
     } catch (error) {
       alert("Failed to delete movie. Please try again.");
     }
   };
+  
 
   return (
     <Box display="flex" height="100vh">

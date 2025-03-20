@@ -24,19 +24,35 @@ const allMovies = async () => {
   return allMovies;
 };
 
-
-
 const addMovie = async (movieData) => {
   try {
     // Validate required fields
-    const { title, overview, backdrop_path, poster_path, release_date, price, vote_average, vote_count } = movieData;
+    const {
+      title,
+      overview,
+      backdrop_path,
+      poster_path,
+      release_date,
+      price,
+      vote_average,
+      vote_count,
+    } = movieData;
 
-    if (!title?.trim() || !overview?.trim() || !backdrop_path?.trim() || !poster_path?.trim() || !release_date?.trim() || price === undefined) {
+    if (
+      !title?.trim() ||
+      !overview?.trim() ||
+      !backdrop_path?.trim() ||
+      !poster_path?.trim() ||
+      !release_date?.trim() ||
+      price === undefined
+    ) {
       throw new Error("All required fields must be provided.");
     }
 
     // Check if movie already exists by title (case-insensitive)
-    const existingMovie = await Movie.findOne({ title: { $regex: new RegExp("^" + title + "$", "i") } });
+    const existingMovie = await Movie.findOne({
+      title: { $regex: new RegExp("^" + title + "$", "i") },
+    });
     if (existingMovie) {
       throw new Error("Movie with this title already exists.");
     }
@@ -58,7 +74,8 @@ const addMovie = async (movieData) => {
 
     // Capitalize first letter of title and overview
     const formattedTitle = title.charAt(0).toUpperCase() + title.slice(1);
-    const formattedOverview = overview.charAt(0).toUpperCase() + overview.slice(1);
+    const formattedOverview =
+      overview.charAt(0).toUpperCase() + overview.slice(1);
 
     // Create new movie instance
     const newMovie = new Movie({
@@ -81,6 +98,19 @@ const addMovie = async (movieData) => {
   }
 };
 
+const delMovie = async (id) => {
+  try {
+    return await Movie.findByIdAndDelete(id);
+  } catch (error) {
+    throw new Error("Error deleting movie: " + error.message);
+  }
+};
 
-
-module.exports = { slideMovies, recMovies, getMovie, allMovies, addMovie };
+module.exports = {
+  slideMovies,
+  recMovies,
+  getMovie,
+  allMovies,
+  addMovie,
+  delMovie,
+};

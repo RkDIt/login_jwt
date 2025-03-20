@@ -138,7 +138,22 @@ const addMovieControl = async (req, res) => {
   }
 };
 
+const deleteMovie = async (req, res) => {
+  try {
+    const movieId = req.params.id;
 
+    const deletedMovie = await movieService.delMovie(movieId);
+    if (!deletedMovie) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    res.status(200).json({ message: "Movie Deleted Successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
 
 module.exports = {
   slideMovies,
@@ -146,5 +161,5 @@ module.exports = {
   getMovieControl,
   getAllMovies,
   addMovieControl,
-  
+  deleteMovie,
 };

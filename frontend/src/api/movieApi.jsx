@@ -77,6 +77,17 @@ export const addMovie = async (movieData) => {
   }
 };
 
+export const delMovie = async (movieId) => {
+  try {
+    const response = await axiosInstance.delete(
+      `movie/selectedMovie/${movieId}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const orders = async () => {
   try {
     const response = await axiosInstance.get("/movie/orders");
@@ -90,19 +101,21 @@ export const orders = async () => {
 
 export const userOrders = async (userId) => {
   try {
-     const response = await axiosInstance.get(`movie/userOrders?userId=${userId}`);
-    console.log(response)
+    const response = await axiosInstance.get(
+      `movie/userOrders?userId=${userId}`
+    );
+    console.log(response);
     return response.data.orders;
   } catch (error) {
     throw error;
   }
 };
 
-export const getAllMovies = async()=>{
+export const getAllMovies = async () => {
   try {
-    const response = await axiosInstance.get("movie/allMovies")
+    const response = await axiosInstance.get("movie/allMovies");
     return response.data;
   } catch (error) {
     throw error;
   }
-}
+};

@@ -5,6 +5,7 @@ const {
   topRec,
   getAllMovies,
   addMovieControl,
+  deleteMovie
 } = require("../controllers/movieController");
 const {
   orderConfirm,
@@ -23,5 +24,7 @@ router.get("/userOrders", userOrderControl);
 
 router.post("/addMovie", addMovieControl);
 router.post("/selectedMovie/:id", orderConfirm);
+
+router.delete("/selectedMovie/:id",deleteMovie)
 
 module.exports = router;
