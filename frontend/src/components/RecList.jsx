@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { recList } from "../api/movieApi";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Star, Bookmark } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Bookmark, ArrowRight } from "lucide-react";
 
 const RecList = () => {
   const [movies, setMovies] = useState([]);
@@ -10,6 +10,7 @@ const RecList = () => {
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -38,8 +39,7 @@ const RecList = () => {
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount =
-        direction === "left" ? -clientWidth / 4 : clientWidth / 4;
+      const scrollAmount = direction === "left" ? -clientWidth / 4 : clientWidth / 4;
       scrollRef.current.scrollTo({
         left: scrollLeft + scrollAmount,
         behavior: "smooth",
@@ -49,9 +49,20 @@ const RecList = () => {
     }
   };
 
+  
+
   return (
     <div className="p-4 relative w-[65vw] mx-auto">
-      <h2 className="text-3xl font-bold text-black mb-6">Recommended Movies</h2>
+      {/* Header with "Recommended Movies" & "Show All" Button */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold text-black">Recommended Movies</h2>
+        <button
+          className="flex items-center text-red-500 font-semibold text-lg hover:text-red-600 transition duration-300"
+          onClick={() => navigate("/allMovies")}
+        >
+          Show All <ArrowRight className="h-5 w-5 ml-1" />
+        </button>
+      </div>
 
       <div className="relative">
         {showLeftArrow && (
@@ -74,7 +85,6 @@ const RecList = () => {
               key={movie._id}
               className="movie-card min-w-[22%] max-w-[18%] rounded-lg overflow-hidden bg-gradient-to-t from-black to-gray-900 cursor-pointer relative hover:shadow-[0_4px_15px_rgba(0,0,0,1)] transition-shadow duration-300"
               onClick={() => navigate(`/movieInfo/${movie._id}`)}
-              // onsole.log(`Clicked on movie ID: ${movie._id}`)
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -101,9 +111,7 @@ const RecList = () => {
                 <div className="flex items-center text-red-500 font-bold">
                   <Star className="h-4 w-4 mr-1 fill-red-500" />
                   {movie.vote_average.toFixed(1)} / 10
-                  <span className="text-gray-400 ml-2">
-                    {movie.vote_count} Votes
-                  </span>
+                  <span className="text-gray-400 ml-2">{movie.vote_count} Votes</span>
                 </div>
                 <div className="relative">
                   <h3
@@ -119,7 +127,7 @@ const RecList = () => {
                     <span
                       className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-black"
                       style={{
-                       display: movie.title.length > 20 ? "block" : "none",
+                        display: movie.title.length > 20 ? "block" : "none",
                       }}
                     />
                   </h3>

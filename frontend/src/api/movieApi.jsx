@@ -97,3 +97,12 @@ export const userOrders = async (userId) => {
     throw error;
   }
 };
+
+export const getAllMovies = async()=>{
+  try {
+    const response = await axiosInstance.get("movie/allMovies")
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}

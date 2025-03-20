@@ -75,7 +75,7 @@ const MovieInfo = () => {
                   backgroundImage: `url(${movie.backdrop_path})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
-                  filter: "blur(10px)",
+                  filter: "blur(2px)",
                   zIndex: -1,
                 }}
               />

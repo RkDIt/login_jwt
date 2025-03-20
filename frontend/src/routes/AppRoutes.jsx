@@ -19,6 +19,7 @@ import Receipt from "../components/Receipt.jsx"
 import AddMovies from "../pages/AdminPages/AddMovies.jsx";
 import Orders from "../pages/AdminPages/Orders.jsx";
 import OrdersPage from "../pages/OrderPage.jsx";
+import AllMovies from "../pages/AllMovies.jsx";
 
 
 
@@ -68,6 +69,7 @@ const AppRoutes = () => {
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/receipt" element={<Receipt/>} />
         <Route path="/orders" element={< OrdersPage/>} />
+        <Route path="/allMovies" element={< AllMovies/>} />
         
       </Route>
 
