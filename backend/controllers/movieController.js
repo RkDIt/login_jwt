@@ -6,6 +6,7 @@ import {
   allMovies,
   addMovie,
   delMovie,
+  updateMovie,
 } from "../services/MovieServices.js";
 import messages from "../utils/responseMsg.js";
 
@@ -78,7 +79,14 @@ export const addMovieControl = async (req, res) => {
       vote_count,
     } = req.body;
 
-    if (!title || !overview || !backdrop_path || !poster_path || !release_date || !price) {
+    if (
+      !title ||
+      !overview ||
+      !backdrop_path ||
+      !poster_path ||
+      !release_date ||
+      !price
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -87,10 +95,14 @@ export const addMovieControl = async (req, res) => {
     const voteCount = parseInt(vote_count) || 0;
 
     if (isNaN(moviePrice) || moviePrice <= 0) {
-      return res.status(400).json({ message: "Price must be a positive number" });
+      return res
+        .status(400)
+        .json({ message: "Price must be a positive number" });
     }
     if (avgVote < 0 || avgVote > 10) {
-      return res.status(400).json({ message: "Vote average must be between 0 and 10" });
+      return res
+        .status(400)
+        .json({ message: "Vote average must be between 0 and 10" });
     }
     if (voteCount < 0) {
       return res.status(400).json({ message: "Vote count cannot be negative" });
@@ -127,6 +139,20 @@ export const deleteMovie = async (req, res) => {
 
     res.status(200).json({ message: "Movie Deleted Successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+export const updateMovieControl = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updatedData = req.body;
+    await updateMovie(id, updatedData);
+
+    res.status(200).json({ message: "Movie Updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 };

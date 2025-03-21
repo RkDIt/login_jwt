@@ -6,6 +6,7 @@ import {
   getAllMovies,
   addMovieControl,
   deleteMovie,
+  updateMovieControl,
 } from "../controllers/movieController.js";
 import {
   orderConfirm,
@@ -27,5 +28,7 @@ router.post("/addMovie", addMovieControl);
 router.post("/selectedMovie/:id", orderConfirm);
 
 router.delete("/selectedMovie/:id", deleteMovie);
+
+router.patch("/selectedMovie/:id",updateMovieControl)
 
 export default router;

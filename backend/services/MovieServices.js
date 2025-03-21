@@ -107,6 +107,21 @@ const delMovie = async (id) => {
   }
 };
 
+const updateMovie = async (movieId, updatedData) => {
+  try {
+    const updatedMovie = await Movie.findOneAndUpdate(
+      { _id: movieId },
+      updatedData,
+      { new: true, runValidators: true }
+    );
+
+    
+    return updatedMovie;
+  } catch(error) {
+    throw  Error(error);
+  }
+};
+
 export {
   slideMovie,
   recMovies,
@@ -114,4 +129,5 @@ export {
   allMovies,
   addMovie,
   delMovie,
+  updateMovie,
 };

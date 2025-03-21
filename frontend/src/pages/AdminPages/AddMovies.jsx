@@ -110,6 +110,10 @@ const AddMovies = () => {
     setMovie({ ...movie, [name]: formattedValue });
   };
 
+  const handleUpdateMovie = async(e)=>{
+    e.preventDefault();
+    console.log("hello ")
+  }
   const handleSubmit = async (e) => {   
     e.preventDefault();
     if (validateForm()) {
@@ -314,6 +318,7 @@ const AddMovies = () => {
                 variant="contained"
                 color="primary"
                 startIcon={selectedMovie ? <FaSave /> : null}
+                onClick={handleUpdateMovie}
               >
                 {selectedMovie ? "Update Movie" : "Submit Movie"}
               </Button>

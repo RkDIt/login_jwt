@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Box, TextField } from "@mui/material";
+import { 
+  Card, CardContent, Typography, Table, TableBody, TableCell, 
+  TableContainer, TableHead, TableRow, Paper, IconButton, Box, TextField 
+} from "@mui/material";
 import { Refresh as RefreshIcon } from "@mui/icons-material";
 import AdminSidePanel from "../../components/adminSidePan";
 import { green } from "@mui/material/colors";
@@ -8,11 +11,23 @@ import { orders } from "../../api/movieApi";
 const Orders = () => {
   const [orderList, setOrderList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [userNames, setUserNames] = useState({});
 
   const fetchOrders = async () => {
     try {
       const response = await orders();
       setOrderList(response);
+
+      setUserNames((prevUserNames) => {
+        const updatedUserNames = { ...prevUserNames };
+        response.forEach((order) => {
+          if (order.userId) {
+            updatedUserNames[order.userId._id] = order.userId.name;
+          }
+        });
+        return updatedUserNames;
+      });
+
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -30,17 +45,18 @@ const Orders = () => {
     { title: "Total Orders", value: totalOrders, percentage: "3.2%", positive: true },
   ];
 
-  const filteredOrders = orderList.filter(order => order.userId.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredOrders = orderList.filter(order => {
+    const userName = order.userId ? order.userId.name : userNames[order.userId?._id] || "Unknown";
+    return userName.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
   return (
-    <div className="flex">
-      {/* Sidebar */}
+    <div className="flex h-screen">
       <AdminSidePanel />
-      
-      {/* Main Content */}
-      <div className="flex-1 p-6">
+
+      <div className="flex-1 p-6 flex flex-col">
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-4">
           {summaryData.map((item, index) => (
             <Card key={index} className="p-4 w-full shadow-lg rounded-lg border border-gray-200">
               <CardContent className="text-center">
@@ -68,40 +84,49 @@ const Orders = () => {
           </IconButton>
         </Box>
 
-        {/* Orders Table */}
-        <TableContainer component={Paper} className="shadow-lg rounded-lg border border-gray-200">
-          <Table>
-            <TableHead className="bg-gray-100">
-              <TableRow>
-                <TableCell className="font-bold text-gray-700">Transaction ID</TableCell>
-                <TableCell className="font-bold text-gray-700">Order</TableCell>
-                <TableCell className="font-bold text-gray-700">Date</TableCell>
-                <TableCell className="font-bold text-gray-700">Customer</TableCell>
-                <TableCell className="font-bold text-gray-700">Payment</TableCell>
-                <TableCell className="font-bold text-gray-700">Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {filteredOrders.map((order) => (
-                <TableRow key={order._id} className="hover:bg-gray-50">
-                  <TableCell>{order._id}</TableCell>
-                  <TableCell>{order.movieId.title}</TableCell>
-                  <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>{order.userId.name}</TableCell>
-                  <TableCell>
-                    <span 
-                      className="px-3 py-1 rounded-full text-white text-sm font-medium" 
-                      style={{ backgroundColor: order.paymentStatus === "completed" ? green[500] : "gray" }}
-                    >
-                      {order.paymentStatus}
-                    </span>
-                  </TableCell>
-                  <TableCell className="font-semibold">₹{order.totalAmount}</TableCell>
+        {/* Scrollable Orders Table */}
+        <div className="flex-1 overflow-y-auto border border-gray-200 rounded-lg shadow-lg">
+          <TableContainer component={Paper} className="h-full">
+            <Table>
+              <TableHead className="bg-gray-100">
+                <TableRow>
+                  <TableCell className="font-bold text-gray-700">Transaction ID</TableCell>
+                  <TableCell className="font-bold text-gray-700">Order</TableCell>
+                  <TableCell className="font-bold text-gray-700">Date</TableCell>
+                  <TableCell className="font-bold text-gray-700">Customer</TableCell>
+                  <TableCell className="font-bold text-gray-700">Payment</TableCell>
+                  <TableCell className="font-bold text-gray-700">Total</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {filteredOrders.map((order) => {
+                  const previousUserName = userNames[order.userId?._id] || "Unknown";
+                  const displayUserName = order.userId ? order.userId.name : `${previousUserName} (User doesn't exist anymore)`;
+
+                  return (
+                    <TableRow key={order._id} className="hover:bg-gray-50">
+                      <TableCell>{order._id}</TableCell>
+                      <TableCell>{order.movieId.title}</TableCell>
+                      <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <span className={order.userId ? "" : "text-red-500"}>{displayUserName}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span 
+                          className="px-3 py-1 rounded-full text-white text-sm font-medium" 
+                          style={{ backgroundColor: order.paymentStatus === "completed" ? green[500] : "gray" }}
+                        >
+                          {order.paymentStatus}
+                        </span>
+                      </TableCell>
+                      <TableCell className="font-semibold">₹{order.totalAmount}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
       </div>
     </div>
   );
