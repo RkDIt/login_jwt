@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { 
   Card, CardContent, Typography, Table, TableBody, TableCell, 
-  TableContainer, TableHead, TableRow, Paper, IconButton, Box, TextField 
+  TableContainer, TableHead, TableRow, Paper, IconButton, Box, TextField, CircularProgress 
 } from "@mui/material";
 import { Refresh as RefreshIcon } from "@mui/icons-material";
 import AdminSidePanel from "../../components/adminSidePan";
@@ -12,8 +12,10 @@ const Orders = () => {
   const [orderList, setOrderList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [userNames, setUserNames] = useState({});
+  const [loading, setLoading] = useState(false); // Track loading state
 
   const fetchOrders = async () => {
+    setLoading(true); // Start loading
     try {
       const response = await orders();
       setOrderList(response);
@@ -27,10 +29,10 @@ const Orders = () => {
         });
         return updatedUserNames;
       });
-
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
+    setLoading(false); // Stop loading
   };
 
   useEffect(() => {
@@ -84,49 +86,55 @@ const Orders = () => {
           </IconButton>
         </Box>
 
-        {/* Scrollable Orders Table */}
-        <div className="flex-1 overflow-y-auto border border-gray-200 rounded-lg shadow-lg">
-          <TableContainer component={Paper} className="h-full">
-            <Table>
-              <TableHead className="bg-gray-100">
-                <TableRow>
-                  <TableCell className="font-bold text-gray-700">Transaction ID</TableCell>
-                  <TableCell className="font-bold text-gray-700">Order</TableCell>
-                  <TableCell className="font-bold text-gray-700">Date</TableCell>
-                  <TableCell className="font-bold text-gray-700">Customer</TableCell>
-                  <TableCell className="font-bold text-gray-700">Payment</TableCell>
-                  <TableCell className="font-bold text-gray-700">Total</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredOrders.map((order) => {
-                  const previousUserName = userNames[order.userId?._id] || "Unknown";
-                  const displayUserName = order.userId ? order.userId.name : `${previousUserName} (User doesn't exist anymore)`;
+        {/* Loading Animation */}
+        {loading ? (
+          <div className="flex-1 flex justify-center items-center">
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto border border-gray-200 rounded-lg shadow-lg">
+            <TableContainer component={Paper} className="h-full">
+              <Table>
+                <TableHead className="bg-gray-100">
+                  <TableRow>
+                    <TableCell className="font-bold text-gray-700">Transaction ID</TableCell>
+                    <TableCell className="font-bold text-gray-700">Order</TableCell>
+                    <TableCell className="font-bold text-gray-700">Date</TableCell>
+                    <TableCell className="font-bold text-gray-700">Customer</TableCell>
+                    <TableCell className="font-bold text-gray-700">Payment</TableCell>
+                    <TableCell className="font-bold text-gray-700">Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {filteredOrders.map((order) => {
+                    const previousUserName = userNames[order.userId?._id] || "Unknown";
+                    const displayUserName = order.userId ? order.userId.name : `${previousUserName} (User doesn't exist anymore)`;
 
-                  return (
-                    <TableRow key={order._id} className="hover:bg-gray-50">
-                      <TableCell>{order._id}</TableCell>
-                      <TableCell>{order.movieId.title}</TableCell>
-                      <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <span className={order.userId ? "" : "text-red-500"}>{displayUserName}</span>
-                      </TableCell>
-                      <TableCell>
-                        <span 
-                          className="px-3 py-1 rounded-full text-white text-sm font-medium" 
-                          style={{ backgroundColor: order.paymentStatus === "completed" ? green[500] : "gray" }}
-                        >
-                          {order.paymentStatus}
-                        </span>
-                      </TableCell>
-                      <TableCell className="font-semibold">₹{order.totalAmount}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </div>
+                    return (
+                      <TableRow key={order._id} className="hover:bg-gray-50">
+                        <TableCell>{order._id}</TableCell>
+                        <TableCell>{order.movieId.title}</TableCell>
+                        <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <span className={order.userId ? "" : "text-red-500"}>{displayUserName}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span 
+                            className="px-3 py-1 rounded-full text-white text-sm font-medium" 
+                            style={{ backgroundColor: order.paymentStatus === "completed" ? green[500] : "gray" }}
+                          >
+                            {order.paymentStatus}
+                          </span>
+                        </TableCell>
+                        <TableCell className="font-semibold">₹{order.totalAmount}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
       </div>
     </div>
   );
