@@ -22,7 +22,7 @@ app.use(express.json());
 // app.get("/test", (req, res) => {
 //     res.json({ message: "Backend is running!" });
 //   });
-app.use(cors());
+app.use(cors({origin: "https://login-jwt-o8ol.vercel.app/" }));
 // app.options("*", cors(corsOptions));
 app.use(helmet());
 app.use(morgan("dev"));
