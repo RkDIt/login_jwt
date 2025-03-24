@@ -12,7 +12,7 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-app.use(cors({origin: "https://login-jwt-o8ol.vercel.app/" }));
+app.use(cors({origin: 'https://login-jwt-o8ol.vercel.app' }));
 app.options("*", cors());
 app.use(helmet());
 app.use(morgan("dev"));
