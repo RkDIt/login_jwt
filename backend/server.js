@@ -12,18 +12,8 @@ const app = express();
 connectDB();
 
 app.use(express.json());
-
-// const corsOptions = {
-//   origin: FRONTEND_URL,
-//   credentials: true,
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-// };
-// app.get("/test", (req, res) => {
-//     res.json({ message: "Backend is running!" });
-//   });
 app.use(cors({origin: "https://login-jwt-o8ol.vercel.app/" }));
-// app.options("*", cors(corsOptions));
+app.options("*", cors());
 app.use(helmet());
 app.use(morgan("dev"));
 app.use("/api/auth", authRoutes);
