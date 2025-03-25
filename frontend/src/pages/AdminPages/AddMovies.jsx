@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminSidePanel from "../../components/adminSidePan";
-import { allMovies, addMovie,delMovie } from "../../api/movieApi"; // Import deleteMovie function
+import { allMovies, addMovie, delMovie,updateMovie } from "../../api/movieApi"; // Import deleteMovie function
 
 import {
   Button,
@@ -14,6 +14,7 @@ import {
   Paper,
   Typography,
   Box,
+  InputAdornment,
 } from "@mui/material";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 
@@ -62,7 +63,6 @@ const AddMovies = () => {
     );
   }, [searchTerm, movies]);
 
-
   const validateForm = () => {
     let tempErrors = {};
     if (!movie.title.trim()) tempErrors.title = "Title is required.";
@@ -110,11 +110,49 @@ const AddMovies = () => {
     setMovie({ ...movie, [name]: formattedValue });
   };
 
-  const handleUpdateMovie = async(e)=>{
+  const handleUpdateMovie = async (e) => {
     e.preventDefault();
-    console.log("hello ")
-  }
-  const handleSubmit = async (e) => {   
+
+    if (validateForm()) {
+      const movieData = {
+        ...movie,
+        vote_average: parseFloat(movie.vote_average).toFixed(2),
+      };
+      console.log(movieData)
+      try {
+        // Call your update API endpoint here
+        // For example: await updateMovie(selectedMovie._id, movieData);
+        await updateMovie(selectedMovie._id,movieData)
+        alert("Movie updated successfully!");
+
+        // Update movie in the list
+        setMovies((prevMovies) =>
+          prevMovies.map((m) =>
+            m._id === selectedMovie._id ? { ...m, ...movieData } : m
+          )
+        );
+
+
+        // Reset form fields
+        setMovie({
+          title: "",
+          overview: "",
+          backdrop_path: "",
+          poster_path: "",
+          release_date: "",
+          price: "",
+          vote_count: "",
+          vote_average: "",
+        });
+
+        setSelectedMovie(null);
+      } catch (error) {
+        alert("Failed to update movie. Please try again.");
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       const movieData = {
@@ -169,17 +207,22 @@ const AddMovies = () => {
   };
 
   const handleDeleteMovie = async (movieId) => {
-   
-    const isConfirmed = window.confirm("Are you sure you want to delete this movie?");
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this movie?"
+    );
     if (!isConfirmed) return;
-  
+
     try {
       await delMovie(movieId);
       alert("Movie deleted successfully!");
-  
-      setMovies((prevMovies) => prevMovies.filter((movie) => movie._id !== movieId));
-      setFilteredMovies((prevMovies) => prevMovies.filter((movie) => movie._id !== movieId));
-  
+
+      setMovies((prevMovies) =>
+        prevMovies.filter((movie) => movie._id !== movieId)
+      );
+      setFilteredMovies((prevMovies) =>
+        prevMovies.filter((movie) => movie._id !== movieId)
+      );
+
       if (selectedMovie && selectedMovie._id === movieId) {
         setSelectedMovie(null);
       }
@@ -187,7 +230,56 @@ const AddMovies = () => {
       alert("Failed to delete movie. Please try again.");
     }
   };
-  
+
+  // Function to render each form field with custom handling for release_date
+  const renderTextField = (field) => {
+    if (field === "release_date") {
+      return (
+        <TextField
+          key={field}
+          fullWidth
+          label="RELEASE DATE"
+          name={field}
+          value={movie[field]}
+          onChange={handleChange}
+          margin="normal"
+          error={!!errors[field]}
+          
+          type="date"
+          InputLabelProps={{
+            shrink: true,
+          }}
+          inputProps={{
+            placeholder: "DD-MM-YYYY",
+          }}
+        />
+      );
+    }
+
+    return (
+      <TextField
+        key={field}
+        fullWidth
+        label={field.replace("_", " ").toUpperCase()}
+        name={field}
+        value={movie[field]}
+        onChange={handleChange}
+        margin="normal"
+        error={!!errors[field]}
+        helperText={errors[field] || ""}
+        type={
+          ["price", "vote_count", "vote_average"].includes(field)
+            ? "number"
+            : "text"
+        }
+        inputProps={
+          field === "vote_average"
+            ? { min: 1, max: 10, step: "0.01" }
+            : {}
+        }
+      />
+    );
+  };
 
   return (
     <Box display="flex" height="100vh">
@@ -273,7 +365,7 @@ const AddMovies = () => {
           <Typography variant="h5" gutterBottom>
             {selectedMovie ? "Edit Movie" : "Add Movie"}
           </Typography>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={selectedMovie ? handleUpdateMovie : handleSubmit}>
             {[
               "title",
               "overview",
@@ -283,25 +375,7 @@ const AddMovies = () => {
               "price",
               "vote_count",
               "vote_average",
-            ].map((field) => (
-              <TextField
-                key={field}
-                fullWidth
-                label={field.replace("_", " ").toUpperCase()}
-                name={field}
-                value={movie[field]}
-                onChange={handleChange}
-                margin="normal"
-                error={!!errors[field]}
-                helperText={errors[field] || ""}
-                type={field === "vote_average" ? "number" : "text"}
-                inputProps={
-                  field === "vote_average"
-                    ? { min: 1, max: 10, step: "0.01" }
-                    : {}
-                }
-              />
-            ))}
+            ].map((field) => renderTextField(field))}
             <Box display="flex" justifyContent="space-between" mt={2}>
               {selectedMovie && (
                 <Button
@@ -318,7 +392,6 @@ const AddMovies = () => {
                 variant="contained"
                 color="primary"
                 startIcon={selectedMovie ? <FaSave /> : null}
-                onClick={handleUpdateMovie}
               >
                 {selectedMovie ? "Update Movie" : "Submit Movie"}
               </Button>

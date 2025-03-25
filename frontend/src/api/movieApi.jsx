@@ -76,7 +76,17 @@ export const addMovie = async (movieData) => {
     throw error;
   }
 };
+export const updateMovie = async(movieId,movieData)=>{
+  try {
+    const  response = await axiosInstance.patch(`/movie/selectedMovie/${movieId}`,movieData)
+    console.log(movieData,movieId)
+    return response.message
+  } catch (error) {
+    console.error("Error updating movie :",error)
+    throw error
 
+  }
+}
 export const delMovie = async (movieId) => {
   try {
     const response = await axiosInstance.delete(
