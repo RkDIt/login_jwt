@@ -2,19 +2,19 @@ import User from "../models/User.js";
 import messages from "../utils/responseMsg.js";
 
 const currentUser = async ({ _id }) => {
-  console.log("Received _id in currentUser:", _id); // ✅ Log 1
+  // console.log("Received _id in currentUser:", _id); // ✅ Log 1
 
   if (!_id) {
-    console.log("Invalid data: Missing _id"); // ✅ Log 2
+    // console.log("Invalid data: Missing _id"); // ✅ Log 2
     throw { status: 401, message: messages.INVALID_DATA };
   }
 
   try {
     const user = await User.findOne({ _id });
-    console.log("User fetched from DB:", user); // ✅ Log 3
+    // console.log("User fetched from DB:", user); // ✅ Log 3
 
     if (!user) {
-      console.log("User not found for _id:", _id); // ✅ Log 4
+      // console.log("User not found for _id:", _id); // ✅ Log 4
       throw { status: 404, message: messages.USER_NOT_FOUND };
     }
 
@@ -25,7 +25,7 @@ const currentUser = async ({ _id }) => {
       role: user.role,
     };
   } catch (error) {
-    console.error("Error fetching user:", error); // ✅ Log 5
+    // console.error("Error fetching user:", error); // ✅ Log 5
     throw { status: 500, message: messages.SERVER_ERROR };
   }
 };
@@ -35,7 +35,7 @@ const usersLists = async ({ _id }) => {
     const users = await User.find({ _id: { $ne: _id } }).select(
       "_id name email role"
     );
-    console.log("Fetched users (excluding current user):", users);
+    // console.log("Fetched users (excluding current user):", users);
 
     return users;
   } catch (error) {
@@ -45,11 +45,11 @@ const usersLists = async ({ _id }) => {
 };
 
 const deleteUser = async (id) => {
-  console.log("User ID to delete:", id);
+  // console.log("User ID to delete:", id);
 
   try {
     const user = await User.findOneAndDelete({ _id: id });
-    console.log("Deleted User Data:", user);
+    // console.log("Deleted User Data:", user);
 
     if (!user) {
       return "User not found";

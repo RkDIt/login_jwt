@@ -7,14 +7,14 @@ export const slideMovies = async () => {
     const response = await axiosInstance.get(API.CAROUSEL);
     return response.data;
   } catch (error) {
-    console.log(error);
+    throw Error(error);
   }
 };
 
 export const recList = async () => {
   try {
     const response = await axiosInstance.get(API.REC_MOVIES);
-    console.log(response.data);
+    // console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -58,7 +58,7 @@ export const addOrder = async ({
         showtime,
       }
     );
-    console.log("Order created successfully:", response.data);
+    // console.log("Order created successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error(
@@ -80,7 +80,7 @@ export const addMovie = async (movieData) => {
 export const updateMovie = async(movieId,movieData)=>{
   try {
     const  response = await axiosInstance.patch(`${API.SELECTED_MOVIE}/${movieId}`,movieData)
-    console.log(movieData,movieId)
+    // console.log(movieData,movieId)
     return response.message
   } catch (error) {
     console.error("Error updating movie :",error)
@@ -115,7 +115,7 @@ export const userOrders = async (userId) => {
     const response = await axiosInstance.get(
       `${API.USER_ORDERS}?userId=${userId}`
     );
-    console.log(response);
+    // console.log(response);
     return response.data.data;
   } catch (error) {
     throw error;

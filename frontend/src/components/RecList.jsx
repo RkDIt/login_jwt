@@ -102,7 +102,7 @@ const RecList = () => {
                 className="absolute top-2 right-2 bg-white bg-opacity-80 p-1 rounded-full hover:bg-gray-200 transition-all duration-300"
                 onClick={(e) => {
                   e.stopPropagation();
-                  console.log(`Saved movie ID: ${movie._id}`);
+                  // console.log(`Saved movie ID: ${movie._id}`);
                 }}
               >
                 <Bookmark className="h-5 w-5 text-black hover:text-red-500" />

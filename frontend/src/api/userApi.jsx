@@ -26,7 +26,7 @@ export const deleteUser =  async(id)=>{
   try {
     const userId = id;
     const response  = await axiosInstance.delete(`/auth/admin/user/${userId}`)
-    console.log(response);
+    // console.log(response);
   } catch (errors) {
     console.log(error)  
   }

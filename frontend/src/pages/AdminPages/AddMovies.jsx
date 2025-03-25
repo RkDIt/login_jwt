@@ -118,7 +118,7 @@ const AddMovies = () => {
         ...movie,
         vote_average: parseFloat(movie.vote_average).toFixed(2),
       };
-      console.log(movieData)
+      // console.log(movieData)
       try {
         // Call your update API endpoint here
         // For example: await updateMovie(selectedMovie._id, movieData);

@@ -9,9 +9,9 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const userId = localStorage.getItem("userId");
-        console.log(userId);
+        // console.log(userId);
         const ordersData = await userOrders(userId);
-        console.log(ordersData);
+        // console.log(ordersData);
         setOrders(ordersData);
       } catch (error) {
         console.error("Error fetching orders:", error);

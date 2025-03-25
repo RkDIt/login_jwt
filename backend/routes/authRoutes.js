@@ -9,7 +9,6 @@ import {
 } from "../controllers/userController.js";
 import { API } from "../utils/allApis.js";
 
-
 const router = express.Router();
 
 router.post(API.AUTH_REGISTER, registerUsers);

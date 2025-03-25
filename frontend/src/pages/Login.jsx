@@ -30,7 +30,7 @@ export default function LoginPage() {
     initialValues: { email: "", password: "" },
     validationSchema,
     onSubmit: async (values) => {
-      console.log("Logging in with:", values);
+      // console.log("Logging in with:", values);
 
       try {
         const response = await axios.post(
@@ -42,7 +42,7 @@ export default function LoginPage() {
         );
         const token = response.data.data.token;
         
-        console.log("Login  successful :  ", response.data);
+        // console.log("Login  successful :  ", response.data);
 
         axios.defaults.headers.common["Authorization"] = `Bearer  ${token}`;
         if (response.status === 200) {
@@ -56,7 +56,7 @@ export default function LoginPage() {
 
         return token;
       } catch (error) {
-        console.log("Login failed: ", error);
+        // console.log("Login failed: ", error);
         if (error.response?.status === 401) {
           toast.error("Invalid email or password. Please try again.", {
             position: "top-right",

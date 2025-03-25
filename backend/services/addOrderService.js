@@ -36,7 +36,7 @@ export const addOrder = async ({
 
 export const allOrders = async () => {
   const orders = await Order.find().populate("userId movieId");
-  console.log(orders);
+  // console.log(orders);
   return orders;
 };
 

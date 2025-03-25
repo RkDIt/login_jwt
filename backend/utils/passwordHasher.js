@@ -7,7 +7,7 @@ const hashedPassword = async (password) => {
 
 const comparePassword = async (password, storedHashedPassword) => {
   const bool = await bcrypt.compare(password, storedHashedPassword);
-  console.log("inside", bool);
+  // console.log("inside", bool);
   return bool;
 };
 
