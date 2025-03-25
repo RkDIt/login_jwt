@@ -1,9 +1,10 @@
 import { Try } from "@mui/icons-material";
 import axiosInstance from "./axiosInstance";
+import { API } from "../utils/Api";
 
 export const slideMovies = async () => {
   try {
-    const response = await axiosInstance.get("/movie/carousel");
+    const response = await axiosInstance.get(API.CAROUSEL);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -12,7 +13,7 @@ export const slideMovies = async () => {
 
 export const recList = async () => {
   try {
-    const response = await axiosInstance.get("/movie/recMovies");
+    const response = await axiosInstance.get(API.REC_MOVIES);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -21,7 +22,7 @@ export const recList = async () => {
 };
 export const movieDetails = async (movieId) => {
   try {
-    const response = await axiosInstance.get(`/movie/selectedMovie/${movieId}`);
+    const response = await axiosInstance.get(`${API.SELECTED_MOVIE}/${movieId}`);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -30,7 +31,7 @@ export const movieDetails = async (movieId) => {
 
 export const allMovies = async () => {
   try {
-    const response = await axiosInstance.get("/movie/allMovies");
+    const response = await axiosInstance.get(API.ALL_MOVIES);
     return response.data;
   } catch (error) {
     console.log(error);
@@ -47,7 +48,7 @@ export const addOrder = async ({
 }) => {
   try {
     const response = await axiosInstance.post(
-      `/movie/selectedMovie/${movieId}`,
+      `${API.SELECTED_MOVIE}/${movieId}`,
       {
         userId,
         movieId,
@@ -69,7 +70,7 @@ export const addOrder = async ({
 
 export const addMovie = async (movieData) => {
   try {
-    const response = await axiosInstance.post("/movie/addMovie", movieData);
+    const response = await axiosInstance.post(API.ADD_MOVIE, movieData);
     return response.data;
   } catch (error) {
     console.error("Error adding movie:", error);
@@ -78,7 +79,7 @@ export const addMovie = async (movieData) => {
 };
 export const updateMovie = async(movieId,movieData)=>{
   try {
-    const  response = await axiosInstance.patch(`/movie/selectedMovie/${movieId}`,movieData)
+    const  response = await axiosInstance.patch(`${API.SELECTED_MOVIE}/${movieId}`,movieData)
     console.log(movieData,movieId)
     return response.message
   } catch (error) {
@@ -100,11 +101,11 @@ export const delMovie = async (movieId) => {
 
 export const orders = async () => {
   try {
-    const response = await axiosInstance.get("/movie/orders");
-    console.log(response);
-    return response.data.orders;
+    const response = await axiosInstance.get(API.ORDERS);
+ 
+    return response.data.data;
   } catch (error) {
-    console.log(error);
+
     throw error;
   }
 };
@@ -112,10 +113,10 @@ export const orders = async () => {
 export const userOrders = async (userId) => {
   try {
     const response = await axiosInstance.get(
-      `movie/userOrders?userId=${userId}`
+      `${API.USER_ORDERS}?userId=${userId}`
     );
     console.log(response);
-    return response.data.orders;
+    return response.data.data;
   } catch (error) {
     throw error;
   }
@@ -123,7 +124,7 @@ export const userOrders = async (userId) => {
 
 export const getAllMovies = async () => {
   try {
-    const response = await axiosInstance.get("movie/allMovies");
+    const response = await axiosInstance.get(API.ALL_MOVIES);
     return response.data;
   } catch (error) {
     throw error;

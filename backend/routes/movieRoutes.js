@@ -13,22 +13,22 @@ import {
   ordersControl,
   userOrderControl,
 } from "../controllers/orderController.js";
-
+import { API } from "../utils/allApis.js";
 const router = express.Router();
 
 // router.get("/movies/search", searchMovies);
-router.get("/carousel", slideMovies);
-router.get("/recMovies", topRec);
-router.get("/selectedMovie/:id", getMovieControl);
-router.get("/allMovies", getAllMovies);
-router.get("/orders", ordersControl);
-router.get("/userOrders", userOrderControl);
+router.get(API.MOVIE_CARAUSEL, slideMovies);
+router.get(API.MOVIE_REC_MOVIES, topRec);
+router.get(API.MOVIE_SELECTED, getMovieControl);
+router.get(API.MOVIE_ALL, getAllMovies);
+router.get(API.ORDERS, ordersControl);
+router.get(API.USERS_ORDERS, userOrderControl);
 
-router.post("/addMovie", addMovieControl);
-router.post("/selectedMovie/:id", orderConfirm);
+router.post(API.MOVIE_ADD, addMovieControl);
+router.post(API.MOVIE_SELECTED, orderConfirm);
 
-router.delete("/selectedMovie/:id", deleteMovie);
+router.delete(API.MOVIE_SELECTED, deleteMovie);
 
-router.patch("/selectedMovie/:id",updateMovieControl)
+router.patch(API.MOVIE_SELECTED,updateMovieControl)
 
 export default router;

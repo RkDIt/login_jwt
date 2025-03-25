@@ -24,7 +24,6 @@ axiosInstance.interceptors.response.use(
   (error) => {
     console.error("API Error:", error.response?.data || error.message);
 
-    // Handle token expiration or unauthorized access
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       session;

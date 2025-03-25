@@ -39,18 +39,52 @@ export const slideMovies = async (req, res) => {
 export const topRec = async (req, res) => {
   try {
     const data = await recMovies();
-    return Response.success(res, { status: 200, data });
+    
+    if (!data || data.length === 0) {
+      return Response.error(res, {
+        status: 404,
+        message: messages.NO_DATA_FOUND,
+      });
+    }
+
+    return Response.success(res, { 
+      status: 200, 
+      data,
+      message: messages.FETCH_SUCCESS 
+    });
   } catch (error) {
     console.error("Error in topRec:", error);
+    
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
 export const getAllMovies = async (req, res) => {
   try {
     const data = await allMovies();
-    return Response.success(res, { status: 200, data });
+    
+    if (!data || data.length === 0) {
+      return Response.error(res, {
+        status: 404,
+        message: messages.NO_DATA_FOUND,
+      });
+    }
+
+    return Response.success(res, { 
+      status: 200, 
+      data,
+      message: messages.FETCH_SUCCESS 
+    });
   } catch (error) {
     console.error("Error in getAllMovies:", error);
+    
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
@@ -59,10 +93,26 @@ export const getMovieControl = async (req, res) => {
 
   try {
     const movieDetails = await getMovie(movieId);
-    return res.status(200).json({ success: true, data: movieDetails });
+    
+    if (!movieDetails) {
+      return Response.error(res, {
+        status: 404,
+        message: messages.NO_DATA_FOUND,
+      });
+    }
+
+    return Response.success(res, {
+      status: 200,
+      data: movieDetails,
+      message: messages.FETCH_SUCCESS,
+    });
   } catch (error) {
     console.error("Error fetching movie:", error.message);
-    return res.status(404).json({ success: false, message: error.message });
+    
+    return Response.error(res, {
+      status: error.status || 404,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
@@ -87,7 +137,10 @@ export const addMovieControl = async (req, res) => {
       !release_date ||
       !price
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return Response.error(res, {
+        status: 400,
+        message: "All fields are required",
+      });
     }
 
     const moviePrice = parseFloat(price);
@@ -95,17 +148,22 @@ export const addMovieControl = async (req, res) => {
     const voteCount = parseInt(vote_count) || 0;
 
     if (isNaN(moviePrice) || moviePrice <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Price must be a positive number" });
+      return Response.error(res, {
+        status: 400,
+        message: "Price must be a positive number",
+      });
     }
     if (avgVote < 0 || avgVote > 10) {
-      return res
-        .status(400)
-        .json({ message: "Vote average must be between 0 and 10" });
+      return Response.error(res, {
+        status: 400,
+        message: "Vote average must be between 0 and 10",
+      });
     }
     if (voteCount < 0) {
-      return res.status(400).json({ message: "Vote count cannot be negative" });
+      return Response.error(res, {
+        status: 400,
+        message: "Vote count cannot be negative",
+      });
     }
 
     const newMovie = {
@@ -121,10 +179,18 @@ export const addMovieControl = async (req, res) => {
 
     const movie = await addMovie(newMovie);
 
-    res.status(201).json({ message: "Movie added successfully", movie });
+    return Response.success(res, {
+      status: 201,
+      data: movie,
+      message: "Movie added successfully",
+    });
   } catch (error) {
     console.error("Error adding movie:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
@@ -134,14 +200,21 @@ export const deleteMovie = async (req, res) => {
     const deletedMovie = await delMovie(movieId);
 
     if (!deletedMovie) {
-      return res.status(404).json({ message: "Movie not found" });
+      return Response.error(res, {
+        status: 404,
+        message: "Movie not found",
+      });
     }
 
-    res.status(200).json({ message: "Movie Deleted Successfully" });
+    return Response.success(res, {
+      status: 200,
+      message: "Movie Deleted Successfully",
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
@@ -149,10 +222,25 @@ export const updateMovieControl = async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
-    await updateMovie(id, updatedData);
+    
+    const updatedMovie = await updateMovie(id, updatedData);
 
-    res.status(200).json({ message: "Movie Updated successfully" });
+    if (!updatedMovie) {
+      return Response.error(res, {
+        status: 404,
+        message: "Movie not found or no updates applied",
+      });
+    }
+
+    return Response.success(res, {
+      status: 200,
+      data: updatedMovie,
+      message: "Movie Updated successfully",
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };

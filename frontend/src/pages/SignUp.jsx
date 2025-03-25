@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { API } from "../utils/Api";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +43,7 @@ const SignUp = () => {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/auth/register`,
+          `${import.meta.env.VITE_BASE_URL}${API.REGISTER}`,
           values,
           {
             headers: {

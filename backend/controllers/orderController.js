@@ -5,7 +5,22 @@ import messages from "../utils/responseMsg.js";
 export const orderConfirm = async (req, res) => {
   try {
     const movieId = req.params.id;
-    const { userId, totalAmount, numTickets, ticketType, paymentStatus, showtime } = req.body;
+    const { 
+      userId, 
+      totalAmount, 
+      numTickets, 
+      ticketType, 
+      paymentStatus, 
+      showtime 
+    } = req.body;
+
+    // Input validation
+    if (!userId || !movieId || !totalAmount || !numTickets) {
+      return Response.error(res, {
+        status: 400,
+        message: messages.REQUIRED_FIELDS
+      });
+    }
 
     const orderDetails = await addOrder({
       userId,
@@ -17,35 +32,87 @@ export const orderConfirm = async (req, res) => {
       showtime,
     });
 
-    return Response.success(res, { status: 200, data: orderDetails });
+    if (!orderDetails) {
+      return Response.error(res, {
+        status: 400,
+        message: messages.ORDER_NOT_CREATED
+      });
+    }
+
+    return Response.success(res, { 
+      status: 200, 
+      data: orderDetails,
+      message: messages.ORDER_CREATED
+    });
   } catch (error) {
-    throw new Error(error);
+    console.error("Error in orderConfirm:", error);
+    
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
 export const ordersControl = async (req, res) => {
   try {
     const orders = await allOrders();
-    res.status(200).json({ message: "OK", orders });
+
+    if (!orders || orders.length === 0) {
+      return Response.error(res, {
+        status: 404,
+        message: messages.NO_DATA_FOUND
+      });
+    }
+
+    return Response.success(res, { 
+      status: 200, 
+      data: orders,
+      message: messages.FETCH_SUCCESS 
+    });
   } catch (error) {
-    throw new Error(error);
+    console.error("Error in ordersControl:", error);
+    
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };
 
 export const userOrderControl = async (req, res) => {
   try {
     const userId = req.query.userId;
-    console.log("userId", userId);
 
+    // Validate userId
     if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
+      return Response.error(res, {
+        status: 400,
+        message: messages.REQUIRED_FIELDS
+      });
     }
 
     const orders = await userOrders(userId);
 
-    return res.status(200).json({ success: true, orders });
+    // Check if orders exist
+    if (!orders || orders.length === 0) {
+      return Response.error(res, {
+        status: 404,
+        message: messages.NO_DATA_FOUND
+      });
+    }
+
+    return Response.success(res, { 
+      status: 200, 
+      data: orders,
+      message: messages.USER_ORDERS_RETRIEVED
+    });
   } catch (error) {
     console.error("Error fetching user orders:", error);
-    return res.status(500).json({ success: false, message: error.message });
+    
+    return Response.error(res, {
+      status: error.status || 500,
+      message: error.message || messages.SERVER_ERROR,
+    });
   }
 };

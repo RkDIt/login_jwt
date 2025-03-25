@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {API} from "../utils/Api.jsx"
+
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +34,7 @@ export default function LoginPage() {
 
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/api/auth/login`,
+          `${import.meta.env.VITE_BASE_URL}${API.LOGIN}`,
           values,
           {
             headers: { "Content-Type": "application/json" },
