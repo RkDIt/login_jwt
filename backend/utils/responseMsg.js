@@ -11,6 +11,7 @@ export default {
     NO_DATA_FOUND: "No Data found",
     FETCH_SUCCESS: "Fetch Success",
     USER_UPDATED: "User updated Successfully",
+    USER_DELETED:"User deleted successfully" ,
     ORDER_CREATED: "Order created successfully",
     ORDER_NOT_CREATED: "Order could not be created",
     USER_ORDERS_RETRIEVED: "User orders retrieved successfully"

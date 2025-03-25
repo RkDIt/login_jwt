@@ -91,7 +91,7 @@ export const updateMovie = async(movieId,movieData)=>{
 export const delMovie = async (movieId) => {
   try {
     const response = await axiosInstance.delete(
-      `movie/selectedMovie/${movieId}`
+      `${API.SELECTED_MOVIE}/${movieId}`
     );
     return response;
   } catch (error) {

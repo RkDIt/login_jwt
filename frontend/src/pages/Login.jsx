@@ -6,11 +6,12 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {API} from "../utils/Api.jsx"
-
+import { API } from "../utils/Api.jsx";
+import { Loader2 } from "lucide-react"; // Import loading icon
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const validationSchema = Yup.object({
@@ -30,7 +31,7 @@ export default function LoginPage() {
     initialValues: { email: "", password: "" },
     validationSchema,
     onSubmit: async (values) => {
-      // console.log("Logging in with:", values);
+      setIsLoading(true);
 
       try {
         const response = await axios.post(
@@ -42,21 +43,25 @@ export default function LoginPage() {
         );
         const token = response.data.data.token;
         
-        // console.log("Login  successful :  ", response.data);
-
-        axios.defaults.headers.common["Authorization"] = `Bearer  ${token}`;
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        
         if (response.status === 200) {
           localStorage.setItem("token", token);
           toast.success("Login successful!", {
             position: "top-right",
             autoClose: 3000,
           });
-          navigate("/dashboard");
+
+          // Simulate loading for 5 seconds before redirecting
+          setTimeout(() => {
+            setIsLoading(false);
+            navigate("/dashboard");
+          }, 4000);
         }
 
         return token;
       } catch (error) {
-        // console.log("Login failed: ", error);
+        setIsLoading(false);
         if (error.response?.status === 401) {
           toast.error("Invalid email or password. Please try again.", {
             position: "top-right",
@@ -140,14 +145,21 @@ export default function LoginPage() {
           {/* Login Button */}
           <button
             type="submit"
-            disabled={!formik.isValid || !formik.dirty}
-            className={`mt-8 w-full bg-pink-500 text-white py-4 rounded-full text-2xl font-semibold hover:bg-pink-600 transition ${
-              !formik.isValid || !formik.dirty
+            disabled={!formik.isValid || !formik.dirty || isLoading}
+            className={`mt-8 w-full bg-pink-500 text-white py-4 rounded-full text-2xl font-semibold hover:bg-pink-600 transition flex items-center justify-center ${
+              !formik.isValid || !formik.dirty || isLoading
                 ? "opacity-50 cursor-not-allowed"
                 : ""
             }`}
           >
-            Login
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
 

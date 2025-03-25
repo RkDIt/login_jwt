@@ -14,8 +14,8 @@ const Logout = () => {
 
     // Redirect to login after a short delay (not needed, but can ensure proper redirection)
     setTimeout(() => {
-      navigate("/login", { replace: true });
-    }, 100);
+      navigate("/", { replace: true });
+    }, 0);
   }, [navigate]);
 
   return <div>Logging out...</div>;
