@@ -1,6 +1,9 @@
+
+
 export const API = {
-  LOGIN: "/api/auth/login",
-  REGISTER: "/api/auth/register",
+  API_VER :"/api/v1",
+  LOGIN: "/auth/login",
+  REGISTER: "/auth/register",
   
   USER_INDI: "/auth/user",
   ADMIN: "/auth/admin",

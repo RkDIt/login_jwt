@@ -43,7 +43,7 @@ const SignUp = () => {
     onSubmit: async (values) => {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}${API.REGISTER}`,
+          `${import.meta.env.VITE_BASE_URL}${API.API_VER}${API.REGISTER}`,
           values,
           {
             headers: {

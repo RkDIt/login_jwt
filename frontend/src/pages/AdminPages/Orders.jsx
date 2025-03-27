@@ -5,17 +5,17 @@ import {
 } from "@mui/material";
 import { Refresh as RefreshIcon } from "@mui/icons-material";
 import AdminSidePanel from "../../components/adminSidePan";
-import { green } from "@mui/material/colors";
+import { green, red } from "@mui/material/colors";
 import { orders } from "../../api/movieApi";
 
 const Orders = () => {
   const [orderList, setOrderList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [userNames, setUserNames] = useState({});
-  const [loading, setLoading] = useState(false); // Track loading state
+  const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
       const response = await orders();
       setOrderList(response);
@@ -32,7 +32,7 @@ const Orders = () => {
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
-    setLoading(false); // Stop loading
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -101,22 +101,48 @@ const Orders = () => {
                     <TableCell className="font-bold text-gray-700">Order</TableCell>
                     <TableCell className="font-bold text-gray-700">Date</TableCell>
                     <TableCell className="font-bold text-gray-700">Customer</TableCell>
+                    <TableCell className="font-bold text-gray-700">Status</TableCell>
                     <TableCell className="font-bold text-gray-700">Payment</TableCell>
                     <TableCell className="font-bold text-gray-700">Total</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {filteredOrders.map((order) => {
-                    const previousUserName = userNames[order.userId?._id] || "Unknown";
-                    const displayUserName = order.userId ? order.userId.name : `${previousUserName} (User doesn't exist anymore)`;
+                    // Determine user status
+                    const userStatus = order.userId && order.userId.name 
+                      ? "User Exists" 
+                      : "User Doesn't Exist";
+
+                    const displayUserName = order.userId 
+                      ? order.userId.name 
+                      : userNames[order.userId?._id] || "Unknown";
+                    
+                    // Handle movie title
+                    const displayMovieTitle = order.movieId && order.movieId.title 
+                      ? order.movieId.title 
+                      : "Movie doesn't exist anymore";
 
                     return (
                       <TableRow key={order._id} className="hover:bg-gray-50">
                         <TableCell>{order._id}</TableCell>
-                        <TableCell>{order.movieId.title}</TableCell>
-                        <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>
-                          <span className={order.userId ? "" : "text-red-500"}>{displayUserName}</span>
+                          <span className={!order.movieId || !order.movieId.title ? "text-red-500" : ""}>
+                            {displayMovieTitle}
+                          </span>
+                        </TableCell>
+                        <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{displayUserName}</TableCell>
+                        <TableCell>
+                          <span 
+                            className="px-3 py-1 rounded-full text-white text-sm font-medium"
+                            style={{ 
+                              backgroundColor: userStatus === "User Exists" 
+                                ? green[500] 
+                                : red[500] 
+                            }}
+                          >
+                            {userStatus}
+                          </span>
                         </TableCell>
                         <TableCell>
                           <span 

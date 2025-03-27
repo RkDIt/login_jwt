@@ -1,6 +1,9 @@
+const API_VERSION =  "/api/v1"
+
+
 export const API = {
-  AUTH: "/api/auth",
-  MOVIE: "/api/movie",
+  AUTH: `${API_VERSION}/auth`,
+  MOVIE: `${API_VERSION}/movie`,
 
   AUTH_REGISTER: "/register",
   AUTH_LOGIN: "/login",
