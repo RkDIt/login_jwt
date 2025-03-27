@@ -37,6 +37,7 @@ const addMovie = async (movieData) => {
       price,
       vote_average,
       vote_count,
+      language,
     } = movieData;
 
     if (
@@ -88,6 +89,7 @@ const addMovie = async (movieData) => {
       price: moviePrice,
       vote_average: avgVote,
       vote_count: voteCount,
+      language,
     });
 
     // Save to database
@@ -115,10 +117,9 @@ const updateMovie = async (movieId, updatedData) => {
       { new: true, runValidators: true }
     );
 
-    
     return updatedMovie;
-  } catch(error) {
-    throw  Error(error);
+  } catch (error) {
+    throw Error(error);
   }
 };
 

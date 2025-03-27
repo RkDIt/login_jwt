@@ -11,25 +11,54 @@ import {
   Box,
   Container,
   IconButton,
+  Button,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const AllMovies = () => {
   const [movies, setMovies] = useState([]);
+  const [originalMovies, setOriginalMovies] = useState([]);
+  const [selectedLanguage, setSelectedLanguage] = useState("All");
+  const [availableLanguages, setAvailableLanguages] = useState(["All"]);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAllMovies = async () => {
       try {
         const response = await getAllMovies();
-        setMovies(response.data || []);
+        const fetchedMovies = response.data || [];
+        
+        // Extract unique languages from the movies
+        const uniqueLanguages = ["All", ...new Set(
+          fetchedMovies
+            .map(movie => movie.language)
+            .filter(lang => lang) // Remove any null or undefined languages
+            .map(lang => lang.charAt(0).toUpperCase() + lang.slice(1).toLowerCase()) // Normalize capitalization
+        )];
+
+        setMovies(fetchedMovies);
+        setOriginalMovies(fetchedMovies);
+        setAvailableLanguages(uniqueLanguages);
       } catch (error) {
         console.error("Failed to fetch movies:", error);
       }
     };
     fetchAllMovies();
   }, []);
+
+  const handleLanguageFilter = (language) => {
+    setSelectedLanguage(language);
+    
+    if (language === "All") {
+      setMovies(originalMovies);
+    } else {
+      const filteredMovies = originalMovies.filter(
+        (movie) => movie.language.toLowerCase() === language.toLowerCase()
+      );
+      setMovies(filteredMovies);
+    }
+  };
 
   return (
     <>
@@ -62,6 +91,30 @@ const AllMovies = () => {
         </IconButton>
 
         <Container maxWidth="lg" style={{ padding: "24px", marginTop: "10px" }}>
+          {/* Language Filter Buttons */}
+          <Box 
+            display="flex" 
+            justifyContent="center" 
+            alignItems="center" 
+            gap={2} 
+            marginBottom={4}
+          >
+            {availableLanguages.map((language) => (
+              <Button
+                key={language}
+                variant={selectedLanguage === language ? "contained" : "outlined"}
+                color="primary"
+                onClick={() => handleLanguageFilter(language)}
+                style={{
+                  textTransform: "none",
+                  fontWeight: selectedLanguage === language ? "bold" : "normal",
+                }}
+              >
+                {language}
+              </Button>
+            ))}
+          </Box>
+
           <Typography
             variant="h4"
             style={{
@@ -70,9 +123,10 @@ const AllMovies = () => {
               textAlign: "left",
             }}
           >
-            All Movies
+            {selectedLanguage} Movies
           </Typography>
 
+          {/* Rest of the component remains the same as in the original code */}
           {/* Movie Grid */}
           <Grid container spacing={4} justifyContent="center">
             {movies.map((movie) => (
@@ -90,7 +144,7 @@ const AllMovies = () => {
                     overflow: "hidden",
                     position: "relative",
                     width: "100%",
-                    height: "450px", // Fixed height for consistency
+                    height: "450px",
                   }}
                   onMouseOver={(e) =>
                     (e.currentTarget.style.transform = "scale(1.05)")
@@ -106,7 +160,7 @@ const AllMovies = () => {
                     alt={movie.title}
                     style={{
                       width: "100%",
-                      height: "85%", // Adjusted height for consistency
+                      height: "85%",
                       objectFit: "cover",
                     }}
                   />
@@ -181,6 +235,17 @@ const AllMovies = () => {
               </Grid>
             ))}
           </Grid>
+
+          {/* No Movies Found Message */}
+          {movies.length === 0 && (
+            <Typography 
+              variant="h6" 
+              align="center" 
+              style={{ marginTop: "50px", color: "gray" }}
+            >
+              No movies found for {selectedLanguage} language
+            </Typography>
+          )}
         </Container>
       </Box>
     </>

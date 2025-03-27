@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminSidePanel from "../../components/adminSidePan";
-import { allMovies, addMovie, delMovie,updateMovie } from "../../api/movieApi"; // Import deleteMovie function
+import { allMovies, addMovie, delMovie, updateMovie } from "../../api/movieApi";
 
 import {
   Button,
@@ -14,7 +14,10 @@ import {
   Paper,
   Typography,
   Box,
-  InputAdornment,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 
@@ -35,9 +38,19 @@ const AddMovies = () => {
     price: "",
     vote_count: "",
     vote_average: "",
+    language: "", // Added language field
   });
 
   const [errors, setErrors] = useState({});
+
+  // Language options
+  const languageOptions = [
+    "English",
+    "Hindi", 
+    "Punjabi", 
+    "Tamil", 
+    "Japanese"
+  ];
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -84,11 +97,36 @@ const AddMovies = () => {
       movie.vote_average > 10
     )
       tempErrors.vote_average = "Vote average must be between 1 and 10.";
+    if (!movie.language)
+      tempErrors.language = "Language is required.";
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
+  const handleDeleteMovie = async (movieId) => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this movie?"
+    );
+    if (!isConfirmed) return;
 
+    try {
+      await delMovie(movieId);
+      alert("Movie deleted successfully!");
+
+      setMovies((prevMovies) =>
+        prevMovies.filter((movie) => movie._id !== movieId)
+      );
+      setFilteredMovies((prevMovies) =>
+        prevMovies.filter((movie) => movie._id !== movieId)
+      );
+
+      if (selectedMovie && selectedMovie._id === movieId) {
+        setSelectedMovie(null);
+      }
+    } catch (error) {
+      alert("Failed to delete movie. Please try again.");
+    }
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -118,11 +156,9 @@ const AddMovies = () => {
         ...movie,
         vote_average: parseFloat(movie.vote_average).toFixed(2),
       };
-      // console.log(movieData)
+      
       try {
-        // Call your update API endpoint here
-        // For example: await updateMovie(selectedMovie._id, movieData);
-        await updateMovie(selectedMovie._id,movieData)
+        await updateMovie(selectedMovie._id, movieData)
         alert("Movie updated successfully!");
 
         // Update movie in the list
@@ -131,7 +167,6 @@ const AddMovies = () => {
             m._id === selectedMovie._id ? { ...m, ...movieData } : m
           )
         );
-
 
         // Reset form fields
         setMovie({
@@ -143,6 +178,7 @@ const AddMovies = () => {
           price: "",
           vote_count: "",
           vote_average: "",
+          language: "",
         });
 
         setSelectedMovie(null);
@@ -178,6 +214,7 @@ const AddMovies = () => {
           price: "",
           vote_count: "",
           vote_average: "",
+          language: "",
         });
 
         setSelectedMovie(null);
@@ -203,36 +240,44 @@ const AddMovies = () => {
       price: "",
       vote_count: "",
       vote_average: "",
+      language: "",
     });
   };
 
-  const handleDeleteMovie = async (movieId) => {
-    const isConfirmed = window.confirm(
-      "Are you sure you want to delete this movie?"
-    );
-    if (!isConfirmed) return;
-
-    try {
-      await delMovie(movieId);
-      alert("Movie deleted successfully!");
-
-      setMovies((prevMovies) =>
-        prevMovies.filter((movie) => movie._id !== movieId)
-      );
-      setFilteredMovies((prevMovies) =>
-        prevMovies.filter((movie) => movie._id !== movieId)
-      );
-
-      if (selectedMovie && selectedMovie._id === movieId) {
-        setSelectedMovie(null);
-      }
-    } catch (error) {
-      alert("Failed to delete movie. Please try again.");
-    }
-  };
-
-  // Function to render each form field with custom handling for release_date
+  // Function to render form fields
   const renderTextField = (field) => {
+    // Special handling for language field
+    if (field === "language") {
+      return (
+        <FormControl 
+          key={field} 
+          fullWidth 
+          margin="normal" 
+          error={!!errors[field]}
+        >
+          <InputLabel>Language</InputLabel>
+          <Select
+            name={field}
+            value={movie[field]}
+            label="Language"
+            onChange={handleChange}
+          >
+            {languageOptions.map((lang) => (
+              <MenuItem key={lang} value={lang}>
+                {lang}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors[field] && (
+            <Typography color="error" variant="caption">
+              {errors[field]}
+            </Typography>
+          )}
+        </FormControl>
+      );
+    }
+
+    // Special handling for release_date
     if (field === "release_date") {
       return (
         <TextField
@@ -244,7 +289,6 @@ const AddMovies = () => {
           onChange={handleChange}
           margin="normal"
           error={!!errors[field]}
-          
           type="date"
           InputLabelProps={{
             shrink: true,
@@ -256,6 +300,7 @@ const AddMovies = () => {
       );
     }
 
+    // Default text field rendering
     return (
       <TextField
         key={field}
@@ -375,6 +420,7 @@ const AddMovies = () => {
               "price",
               "vote_count",
               "vote_average",
+              "language", // Added language field
             ].map((field) => renderTextField(field))}
             <Box display="flex" justifyContent="space-between" mt={2}>
               {selectedMovie && (

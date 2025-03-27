@@ -127,6 +127,7 @@ export const addMovieControl = async (req, res) => {
       price,
       vote_average,
       vote_count,
+      language,
     } = req.body;
 
     if (
@@ -142,7 +143,7 @@ export const addMovieControl = async (req, res) => {
         message: "All fields are required",
       });
     }
-
+    
     const moviePrice = parseFloat(price);
     const avgVote = parseFloat(vote_average) || 0;
     const voteCount = parseInt(vote_count) || 0;
@@ -175,6 +176,7 @@ export const addMovieControl = async (req, res) => {
       price: moviePrice,
       vote_average: avgVote,
       vote_count: voteCount,
+      language,
     };
 
     const movie = await addMovie(newMovie);
