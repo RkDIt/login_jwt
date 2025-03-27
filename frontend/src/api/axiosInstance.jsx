@@ -1,5 +1,6 @@
 import axios from "axios";
 import {API} from "../utils/Api"
+import localStorageUtil from "../utils/localStorage";
 
 const axiosInstance = axios.create({
   baseURL: `${import.meta.env.VITE_BASE_URL}${API.API_VER}`,
@@ -10,7 +11,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = localStorageUtil.get("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,7 +26,7 @@ axiosInstance.interceptors.response.use(
     console.error("API Error:", error.response?.data || error.message);
 
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
+      localStorageUtil.remove("token");
       session;
       window.location.href = "/login";
     }

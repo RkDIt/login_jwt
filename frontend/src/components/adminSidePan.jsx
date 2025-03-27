@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import localStorageUtil from "../utils/localStorage";
 import {
   Home,
   Film,
@@ -18,16 +19,16 @@ const AdminSidePanel = () => {
 
   // Load collapsed state from localStorage (default to true)
   const [collapsed, setCollapsed] = useState(
-    () => JSON.parse(localStorage.getItem("sidebarCollapsed")) ?? true
+    () => localStorageUtil.get("sidebarCollapsed") ?? true
   );
 
   // Update localStorage when collapsed state changes
   useEffect(() => {
-    localStorage.setItem("sidebarCollapsed", JSON.stringify(collapsed));
+    localStorageUtil.set("sidebarCollapsed", collapsed);
   }, [collapsed]);
 
   const handleLogout = () => {
-    localStorage.clear(); 
+    localStorageUtil.clear(); 
     navigate("/logout"); 
     window.location.reload();
   };

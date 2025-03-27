@@ -1,9 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getUserDetails } from "../api/userApi"; 
+import localStorageUtil from "../utils/localStorage";
 
 const PrivateRoute = ({ allowedRoles }) => {
-  const token = localStorage.getItem("token");
+  const token = localStorageUtil.get("token");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +13,7 @@ const PrivateRoute = ({ allowedRoles }) => {
       getUserDetails()
         .then((data) => setUser(data))
         .catch(() => {
-          localStorage.removeItem("token");
+          localStorageUtil.remove("token");
           setUser(null);
         })
         .finally(() => setLoading(false));

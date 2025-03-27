@@ -20,11 +20,12 @@ import AddMovies from "../pages/AdminPages/AddMovies.jsx";
 import Orders from "../pages/AdminPages/Orders.jsx";
 import OrdersPage from "../pages/OrderPage.jsx";
 import AllMovies from "../pages/AllMovies.jsx";
+import localStorageUtil from "../utils/localStorage.jsx";
 
 
 
-const isAuthenticated = () => !!localStorage.getItem("token");
-const getUserRole = () => localStorage.getItem("role");
+const isAuthenticated = () => !!localStorageUtil.get("token");
+const getUserRole = () => localStorageUtil.get("role");
 
 const AppRoutes = () => {
   return (

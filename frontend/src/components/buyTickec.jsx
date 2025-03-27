@@ -18,6 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { addOrder } from "../api/movieApi";
+import localStorageUtil from "../utils/localStorage";
 
 const BookingDetails = ({ showtime }) => {
   const location = useLocation();
@@ -34,7 +35,7 @@ const BookingDetails = ({ showtime }) => {
   const amountPayable = baseTotal + convenienceFee + donationAmount;
   
   const handlePayNow = async () => {
-    const userId = localStorage.getItem("userId");
+    const userId = localStorageUtil.get("userId");
 
     const orderDetails = {
       userId,

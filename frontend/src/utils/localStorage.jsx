@@ -1,20 +1,21 @@
+const localStorageUtil = {
+  get: (key) => {
+    const value = localStorage.getItem(key);
+    return value;
+  },
 
-const getLocalStorage = (key) => {
-  const value = localStorage.getItem(key);
+  set: (key, value) => {
+    localStorage.setItem(key, value);
 
-  return value;
+  },
+
+  clear: () => {
+    localStorage.clear();
+  },
+
+  remove: (key) => {
+    localStorage.removeItem(key);
+  },
 };
 
-const setLocalStorage = (key, value) => {
-  localStorage.setItem(key, JSON.stringify(value));
-};
-
-const clearStorage = () => {
-  localStorage.clear();
-};
-
-const removeStorage = ()=>{
-    localStorage.removeItem(key)
-}
-
-export default {getLocalStorage, setLocalStorage, clearStorage, removeStorage}
+export default localStorageUtil;

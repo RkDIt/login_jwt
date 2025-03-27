@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API } from "../utils/Api.jsx";
 import { Loader2 } from "lucide-react"; // Import loading icon
+import localStorageUtil from "../utils/localStorage.jsx";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,7 +47,8 @@ export default function LoginPage() {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         
         if (response.status === 200) {
-          localStorage.setItem("token", token);
+          localStorageUtil.set("token",token)
+          
           toast.success("Login successful!", {
             position: "top-right",
             autoClose: 3000,

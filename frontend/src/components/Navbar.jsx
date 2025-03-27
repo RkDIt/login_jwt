@@ -11,6 +11,7 @@ import {
 import { getUserDetails } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { getAllMovies } from "../api/movieApi";
+import localStorageUtil from "../utils/localStorage";
 
 const Navbar = () => {
   const [userName, setUserName] = useState("Guest");
@@ -60,7 +61,7 @@ const Navbar = () => {
     const fetchUserData = async () => {
       try {
         const userData = await getUserDetails();
-        localStorage.setItem("userId", userData.data._id);
+        localStorageUtil.set("userId", userData.data._id);
         if (userData?.data.name) {
           setUserName(userData.data.name);
         }

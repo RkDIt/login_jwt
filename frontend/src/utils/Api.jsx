@@ -7,7 +7,7 @@ export const API = {
   
   USER_INDI: "/auth/user",
   ADMIN: "/auth/admin",
-  ADMIN_USER: "/auth/admin/user/",
+  ADMIN_USER: "/auth/admin/user",
 
 //   movies
   CAROUSEL: "/movie/carousel",

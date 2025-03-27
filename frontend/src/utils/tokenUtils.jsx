@@ -1,5 +1,5 @@
 export const getId = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorageUtil.get("token");
   
 
   if (!token) return null;

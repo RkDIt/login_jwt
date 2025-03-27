@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import localStorageUtil from "../utils/localStorage";
 
 const Logout = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     // Clear authentication data
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    localStorageUtil.remove("token");
+    localStorageUtil.remove("role");
 
     // Refresh the page
     window.location.reload();
