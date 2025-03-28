@@ -212,12 +212,12 @@ const Navbar = () => {
                 >
                   <User size={16} className="mr-2" /> Profile
                 </button>
-                <button
+                {/* <button
                   onClick={() => navigate("/watchlist")}
                   className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100"
                 >
                   <Bookmark size={16} className="mr-2" /> Watch List
-                </button>
+                </button> */}
                 <button
                   onClick={() => navigate("/orders")}
                   className="flex items-center px-4 py-2 w-full text-left hover:bg-gray-100"
