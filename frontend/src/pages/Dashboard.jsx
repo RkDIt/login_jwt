@@ -56,7 +56,7 @@ const Dashboard = () => {
     const loadData = async () => {       
       try {         
         // Simulated async data loading for 3 seconds         
-        await new Promise(resolve => setTimeout(resolve, 3000));         
+        await new Promise(resolve => setTimeout(resolve, 1000));         
         setIsLoading(false);          
         
         if (!hasSeenWireframe) {
