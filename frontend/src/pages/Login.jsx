@@ -54,7 +54,6 @@ export default function LoginPage() {
             autoClose: 3000,
           });
 
-          // Simulate loading for 5 seconds before redirecting
           setTimeout(() => {
             setIsLoading(false);
             navigate("/dashboard");
