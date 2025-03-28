@@ -208,7 +208,7 @@ const MovieInfo = () => {
                   </Button>
 
                   {/* Save for Later Button (Expands to Reveal Text) */}
-                  <motion.div
+                  {/* <motion.div
                     onMouseEnter={() => setHoverSave(true)}
                     onMouseLeave={() => setHoverSave(false)}
                     initial={{ width: "60px" }}
@@ -232,12 +232,12 @@ const MovieInfo = () => {
                       position: "relative",
                     }}
                   >
-                    {/* Bookmark Icon (Always Visible) */}
+                    Bookmark Icon (Always Visible)
                     <div style={{ position: "absolute", left: "18px" }}>
                       <Bookmark size={24} />
                     </div>
 
-                    {/* Revealed Text (Appears on Hover) */}
+                   
                     {hoverSave && (
                       <motion.span
                         initial={{ opacity: 0 }}
@@ -248,7 +248,7 @@ const MovieInfo = () => {
                         Save for Later
                       </motion.span>
                     )}
-                  </motion.div>
+                  </motion.div> */}
                 </Box>
               </motion.div>
 

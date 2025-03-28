@@ -98,7 +98,7 @@ const RecList = () => {
                 alt={movie.title}
                 className="w-full h-95 object-cover"
               />
-              <button
+              {/* <button
                 className="absolute top-2 right-2 bg-white bg-opacity-80 p-1 rounded-full hover:bg-gray-200 transition-all duration-300"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -106,7 +106,7 @@ const RecList = () => {
                 }}
               >
                 <Bookmark className="h-5 w-5 text-black hover:text-red-500" />
-              </button>
+              </button> */}
               <div className="p-4 text-white">
                 <div className="flex items-center text-red-500 font-bold">
                   <Star className="h-4 w-4 mr-1 fill-red-500" />

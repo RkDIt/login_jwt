@@ -140,7 +140,7 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full bg-white shadow-md flex items-center justify-between py-3 md:px-84 px-4 z-[999]">
+      <div className="fixed top-0 left-0 w-full bg-white shadow-md flex items-center justify-between py-5 md:px-84 px-4 z-[999]">
         <div className="flex items-center w-full md:w-[40vw]">
           <a
             onClick={() => navigate("/dashboard")}
