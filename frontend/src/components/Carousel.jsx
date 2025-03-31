@@ -32,9 +32,9 @@ const Carousel = () => {
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, [movies]);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
-  }
+  // if (loading) {
+  //   return <div className="text-center py-10">Loading...</div>;
+  // }
 
   if (!movies.length) {
     return <div className="text-center py-10">No movies available.</div>;
