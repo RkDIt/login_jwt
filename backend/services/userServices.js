@@ -33,7 +33,7 @@ const currentUser = async ({ _id }) => {
 const usersLists = async ({ _id }) => {
   try {
     const users = await User.find({ _id: { $ne: _id } }).select(
-      "_id name email role"
+      "_id name email role isActive"
     );
     // console.log("Fetched users (excluding current user):", users);
 
@@ -45,19 +45,24 @@ const usersLists = async ({ _id }) => {
 };
 
 const deleteUser = async (id) => {
-  // console.log("User ID to delete:", id);
-
+  // console.log("User ID to soft delete:", id);
+  
   try {
-    const user = await User.findOneAndDelete({ _id: id });
-    // console.log("Deleted User Data:", user);
-
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { isActive: false },
+      { new: true }
+    );
+    
+    // console.log("Soft Deleted User Data:", user);
+    
     if (!user) {
       return "User not found";
     }
-
-    return "User deleted successfully";
+    
+    return "User deactivated successfully";
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error deactivating user:", error);
     throw { status: 500, message: messages.SERVER_ERROR };
   }
 };

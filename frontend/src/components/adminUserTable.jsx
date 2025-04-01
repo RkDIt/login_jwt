@@ -15,8 +15,9 @@ import {
   TextField,
   Select,
   MenuItem,
+  Tabs,
+  Tab,
 } from "@mui/material";
-import { Search } from "lucide-react";
 
 const roleLabels = {
   user: "User",
@@ -34,6 +35,7 @@ const AdminUserTable = () => {
   });
   const [originalData, setOriginalData] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState(0); // 0 for Active, 1 for Inactive
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -95,22 +97,40 @@ const AdminUserTable = () => {
   const handleDelete = async () => {
     if (!selectedUser) return;
     try {
+      // Only for active users - deactivate them
       await deleteUser(selectedUser);
-      setUsers(users.filter((user) => user._id !== selectedUser));
+      
+      // Update local state to reflect the change
+      setUsers(
+        users.map((user) =>
+          user._id === selectedUser ? { ...user, isActive: false } : user
+        )
+      );
       setSelectedUser(null);
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("Error updating user status:", error);
     }
+  };
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+    setSelectedUser(null);
+    setIsEditing(false);
   };
 
   const hasChanges = JSON.stringify(editData) !== JSON.stringify(originalData);
 
-  // Filter users based on search term
+  // Filter users based on search term and exclude admins
   const filteredUsers = users.filter(
     (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      (user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      user.role !== "admin" // Exclude admins from the list
   );
+
+  // Explicitly filter users by isActive field
+  const activeUsers = filteredUsers.filter((user) => user.isActive === true);
+  const inactiveUsers = filteredUsers.filter((user) => user.isActive === false);
 
   return (
     <Box sx={{ p: 4, display: "flex", flexDirection: "column", gap: 2 }}>
@@ -136,49 +156,70 @@ const AdminUserTable = () => {
           sx={{ backgroundColor: "white", borderRadius: "4px" }}
         />
 
-        <Box sx={{ display: "flex", gap: 2 }}>
-          {isEditing ? (
-            <>
-              <Button
-                variant="contained"
-                color="success"
-                disabled={!hasChanges}
-                onClick={handleEdit}
-              >
-                Save
-              </Button>
-              <Button
-                variant="contained"
-                color="inherit"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                variant="contained"
-                color="primary"
-                disabled={!selectedUser}
-                onClick={handleEditClick}
-              >
-                Edit
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                disabled={!selectedUser}
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            </>
-          )}
-        </Box>
+        {/* Only show action buttons on Active tab */}
+        {activeTab === 0 && (
+          <Box sx={{ display: "flex", gap: 2 }}>
+            {isEditing ? (
+              <>
+                <Button
+                  variant="contained"
+                  color="success"
+                  disabled={!hasChanges}
+                  onClick={handleEdit}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="contained"
+                  color="inherit"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={!selectedUser}
+                  onClick={handleEditClick}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="contained"
+                  color="error"
+                  disabled={!selectedUser}
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              </>
+            )}
+          </Box>
+        )}
       </Box>
 
-      {/* Table */}
+      {/* Tabs for Active/Inactive Users */}
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          indicatorColor="primary"
+        >
+          <Tab
+            label={`Active Users (${activeUsers.length})`}
+            sx={{ fontWeight: "bold" }}
+          />
+          <Tab
+            label={`Inactive Users (${inactiveUsers.length})`}
+            sx={{ fontWeight: "bold" }}
+          />
+        </Tabs>
+      </Box>
+
+      {/* Table - Different for Active vs Inactive */}
       <TableContainer
         component={Paper}
         sx={{
@@ -188,20 +229,21 @@ const AdminUserTable = () => {
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
         }}
       >
-        <Table>
-          <TableHead>
-            <TableRow sx={{ background: "rgba(255, 255, 255, 0.4)" }}>
-              <TableCell align="center">Select</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Role</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredUsers.length > 0 ? (
-              filteredUsers
-                .filter((user) => user.role !== "admin") // Exclude admins from the list
-                .map((user) => (
+        {activeTab === 0 ? (
+          /* Active Users Table - With full functionality */
+          <Table>
+            <TableHead>
+              <TableRow sx={{ background: "rgba(255, 255, 255, 0.4)" }}>
+                <TableCell align="center">Select</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Role</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {activeUsers.length > 0 ? (
+                activeUsers.map((user) => (
                   <TableRow
                     key={user._id}
                     onClick={() => !isEditing && setSelectedUser(user._id)}
@@ -282,19 +324,82 @@ const AdminUserTable = () => {
                         roleLabels[user.role] || user.role
                       )}
                     </TableCell>
+                    <TableCell>
+                      <span
+                        style={{
+                          backgroundColor: "#4caf50",
+                          color: "white",
+                          padding: "4px 8px",
+                          borderRadius: "12px",
+                          fontSize: "0.75rem",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Active
+                      </span>
+                    </TableCell>
                   </TableRow>
                 ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
-                  <Typography variant="body1" color="textSecondary">
-                    No users found
-                  </Typography>
-                </TableCell>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body1" color="textSecondary">
+                      No active users found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        ) : (
+          /* Inactive Users Table - Simplified with just name, email, status */
+          <Table>
+            <TableHead>
+              <TableRow sx={{ background: "rgba(255, 255, 255, 0.4)" }}>
+                <TableCell>Name</TableCell>
+                <TableCell>Email</TableCell>
+                <TableCell>Status</TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {inactiveUsers.length > 0 ? (
+                inactiveUsers.map((user) => (
+                  <TableRow
+                    key={user._id}
+                    sx={{
+                      transition: "all 0.3s ease-in-out",
+                    }}
+                  >
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <span
+                        style={{
+                          backgroundColor: "#f44336",
+                          color: "white",
+                          padding: "4px 8px",
+                          borderRadius: "12px",
+                          fontSize: "0.75rem",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Inactive
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                    <Typography variant="body1" color="textSecondary">
+                      No inactive users found
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        )}
       </TableContainer>
     </Box>
   );

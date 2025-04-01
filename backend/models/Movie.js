@@ -13,11 +13,16 @@ const movieSchema = new mongoose.Schema({
   release_date: { type: String, required: true },
   vote_average: { type: Number, required: true },
   vote_count: { type: Number, required: true },
-  language: { 
-    type: String, 
-    enum: ['English', 'Hindi', 'Punjabi'],
-    default: 'English'
-  }
+  status: {
+    type: String,
+    enum: ["Upcoming", "Now playing", "Removed"],
+    default: "Upcoming",
+  },
+  language: {
+    type: String,
+    enum: ["English", "Hindi", "Punjabi"],
+    default: "English",
+  },
 });
 
 const Movie = mongoose.model("Movie", movieSchema);

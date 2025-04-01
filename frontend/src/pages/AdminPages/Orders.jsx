@@ -108,10 +108,10 @@ const Orders = () => {
                 </TableHead>
                 <TableBody>
                   {filteredOrders.map((order) => {
-                    // Determine user status
-                    const userStatus = order.userId && order.userId.name 
-                      ? "User Exists" 
-                      : "User Doesn't Exist";
+                    // Determine user status based on isActive property
+                    const userStatus = order.userId && order.userId.isActive 
+                      ? "Active" 
+                      : "Inactive";
 
                     const displayUserName = order.userId 
                       ? order.userId.name 
@@ -136,7 +136,7 @@ const Orders = () => {
                           <span 
                             className="px-3 py-1 rounded-full text-white text-sm font-medium"
                             style={{ 
-                              backgroundColor: userStatus === "User Exists" 
+                              backgroundColor: userStatus === "Active" 
                                 ? green[500] 
                                 : red[500] 
                             }}

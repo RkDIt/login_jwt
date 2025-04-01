@@ -7,10 +7,13 @@ import morgan from "morgan";
 import authRoutes from "./routes/authRoutes.js";
 import movieRoutes from "./routes/movieRoutes.js";
 import {API } from "./utils/allApis.js";
+import { superAdmin } from "./utils/SuperAdmin.js";
 
 const app = express();
 // const FRONTEND_URL = config.url;
-connectDB();
+connectDB().then(()=>{
+  superAdmin()
+}).catch((e)=>{console.log(e)});
 
 app.use(express.json());
 app.use(
