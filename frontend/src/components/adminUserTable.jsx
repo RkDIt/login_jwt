@@ -18,11 +18,25 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
+import * as yup from "yup";
+import { toast } from "react-toastify";
 
 const roleLabels = {
   user: "User",
   subadmin: "Admin",
 };
+
+// Create a validation schema for the email input
+const validationSchema = yup.object({
+  email: yup
+    .string()
+    .email("Invalid email format : user@example.com")
+    .matches(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email format format (user@example.com)"
+    )
+    .required("Email is required"),
+});
 
 const AdminUserTable = () => {
   const [users, setUsers] = useState([]);
@@ -60,32 +74,42 @@ const AdminUserTable = () => {
   };
 
   const handleEdit = async () => {
-    if (
-      !selectedUser ||
-      JSON.stringify(editData) === JSON.stringify(originalData)
-    )
-      return;
-
+    if (!selectedUser || JSON.stringify(editData) === JSON.stringify(originalData)) return;
+  
+    // Validate the editData before proceeding
     try {
-      await editUser(selectedUser, editData);
-      setUsers(
-        users.map((user) =>
-          user._id === selectedUser ? { ...user, ...editData } : user
-        )
-      );
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating user:", error);
-
-      if (
-        error.response &&
-        error.response.data.message === "Email already exists"
-      ) {
-        alert("This email is already in use. Please use a different email.");
-        setEditData((prev) => ({ ...prev, email: originalData.email }));
-      } else {
-        alert("An error occurred while updating the user. Please try again.");
+      // Validate the email input first
+      await validationSchema.validate(editData, { abortEarly: false });
+  
+      // If validation passes, proceed with the user update
+      try {
+        const response = await editUser(selectedUser, editData);
+  
+        // Update the user list after a successful update
+        setUsers(
+          users.map((user) =>
+            user._id === selectedUser ? { ...user, ...editData } : user
+          )
+        );
+        setIsEditing(false);
+  
+        // Show success toast notification
+        toast.success(response.message);
+  
+      } catch (error) {
+        console.error("Error updating user:", error);
+  
+        if (error.response && error.response.data.message === "Email already exists") {
+          alert("This email is already in use. Please use a different email.");
+          setEditData((prev) => ({ ...prev, email: originalData.email }));
+        } else {
+          alert("An error occurred while updating the user. Please try again.");
+        }
       }
+    } catch (validationError) {
+      // If validation fails, show the validation error messages
+      const errorMessages = validationError.errors || [];
+      alert(errorMessages.join(" "));
     }
   };
 
@@ -98,14 +122,14 @@ const AdminUserTable = () => {
     if (!selectedUser) return;
     try {
       // Only for active users - deactivate them
-      await deleteUser(selectedUser);
-      
-      // Update local state to reflect the change
+      const  response  = await deleteUser(selectedUser);
+  
       setUsers(
         users.map((user) =>
           user._id === selectedUser ? { ...user, isActive: false } : user
         )
       );
+      toast.success(response.message)
       setSelectedUser(null);
     } catch (error) {
       console.error("Error updating user status:", error);
