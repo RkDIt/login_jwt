@@ -18,6 +18,8 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { FaEdit, FaTrash, FaSave, FaTimes } from "react-icons/fa";
 
@@ -26,7 +28,9 @@ const AddMovies = () => {
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [submitError, setSubmitError] = useState(null);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   const [movie, setMovie] = useState({
@@ -60,19 +64,23 @@ const AddMovies = () => {
     "Now-playing"
   ];
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await allMovies();
-        setMovies(response.data);
-        setFilteredMovies(response.data);
-      } catch (error) {
-        setError("Failed to fetch movies");
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch movies function for reuse
+  const fetchMovies = async () => {
+    try {
+      setLoading(true);
+      const response = await allMovies();
+      setMovies(response.data);
+      setFilteredMovies(response.data);
+      return response.data;
+    } catch (error) {
+      setError("Failed to fetch movies");
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMovies();
   }, []);
 
@@ -86,33 +94,82 @@ const AddMovies = () => {
 
   const validateForm = () => {
     let tempErrors = {};
-    if (!movie.title.trim()) tempErrors.title = "Title is required.";
-    if (!movie.overview.trim()) tempErrors.overview = "Overview is required.";
-    if (!movie.backdrop_path.trim() || !movie.backdrop_path.startsWith("http"))
-      tempErrors.backdrop_path = "Enter a valid image URL.";
-    if (!movie.poster_path.trim() || !movie.poster_path.startsWith("http"))
-      tempErrors.poster_path = "Enter a valid image URL.";
-    if (!movie.release_date)
+    let isValid = true;
+    
+    // Check each field for validity
+    if (!movie.title.trim()) {
+      tempErrors.title = "Title is required.";
+      isValid = false;
+    }
+    
+    if (!movie.overview.trim()) {
+      tempErrors.overview = "Overview is required.";
+      isValid = false;
+    }
+    
+    if (!movie.backdrop_path.trim()) {
+      tempErrors.backdrop_path = "Backdrop path is required.";
+      isValid = false;
+    } else if (!movie.backdrop_path.startsWith("http")) {
+      tempErrors.backdrop_path = "Enter a valid image URL starting with 'http'.";
+      isValid = false;
+    }
+    
+    if (!movie.poster_path.trim()) {
+      tempErrors.poster_path = "Poster path is required.";
+      isValid = false;
+    } else if (!movie.poster_path.startsWith("http")) {
+      tempErrors.poster_path = "Enter a valid image URL starting with 'http'.";
+      isValid = false;
+    }
+    
+    if (!movie.release_date) {
       tempErrors.release_date = "Release date is required.";
-    if (!movie.price || isNaN(movie.price) || movie.price <= 0)
-      tempErrors.price = "Enter a valid price.";
-    if (!movie.vote_count || isNaN(movie.vote_count) || movie.vote_count < 0)
+      isValid = false;
+    }
+    
+    if (!movie.price) {
+      tempErrors.price = "Price is required.";
+      isValid = false;
+    } else if (isNaN(movie.price) || parseFloat(movie.price) <= 0) {
+      tempErrors.price = "Enter a valid price greater than zero.";
+      isValid = false;
+    }
+    
+    if (!movie.vote_count) {
+      tempErrors.vote_count = "Vote count is required.";
+      isValid = false;
+    } else if (isNaN(movie.vote_count) || parseInt(movie.vote_count) < 0) {
       tempErrors.vote_count = "Vote count must be a non-negative number.";
-    if (
-      !movie.vote_average ||
+      isValid = false;
+    }
+    
+    if (!movie.vote_average) {
+      tempErrors.vote_average = "Vote average is required.";
+      isValid = false;
+    } else if (
       isNaN(movie.vote_average) ||
-      movie.vote_average < 1 ||
-      movie.vote_average > 10
-    )
+      parseFloat(movie.vote_average) < 1 ||
+      parseFloat(movie.vote_average) > 10
+    ) {
       tempErrors.vote_average = "Vote average must be between 1 and 10.";
-    if (!movie.language)
+      isValid = false;
+    }
+    
+    if (!movie.language) {
       tempErrors.language = "Language is required.";
-    if (!movie.status)
+      isValid = false;
+    }
+    
+    if (!movie.status) {
       tempErrors.status = "Status is required.";
+      isValid = false;
+    }
 
     setErrors(tempErrors);
-    return Object.keys(tempErrors).length === 0;
+    return isValid;
   };
+
   const handleDeleteMovie = async (movieId) => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this movie?"
@@ -120,26 +177,28 @@ const AddMovies = () => {
     if (!isConfirmed) return;
 
     try {
+      setSubmitting(true);
       await delMovie(movieId);
-      alert("Movie deleted successfully!");
-
-      setMovies((prevMovies) =>
-        prevMovies.filter((movie) => movie._id !== movieId)
-      );
-      setFilteredMovies((prevMovies) =>
-        prevMovies.filter((movie) => movie._id !== movieId)
-      );
-
+      
+      // Refresh the movie list after deletion
+      await fetchMovies();
+      
       if (selectedMovie && selectedMovie._id === movieId) {
         setSelectedMovie(null);
+        resetForm();
       }
+      
+      alert("Movie deleted successfully!");
     } catch (error) {
+      setSubmitError("Failed to delete movie. Please try again.");
       alert("Failed to delete movie. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     let formattedValue = value;
 
     // Capitalize the first letter for title and overview
@@ -156,93 +215,17 @@ const AddMovies = () => {
     }
 
     setMovie({ ...movie, [name]: formattedValue });
-  };
-
-  const handleUpdateMovie = async (e) => {
-    e.preventDefault();
-
-    if (validateForm()) {
-      const movieData = {
-        ...movie,
-        vote_average: parseFloat(movie.vote_average).toFixed(2),
-      };
-      
-      try {
-        await updateMovie(selectedMovie._id, movieData)
-        alert("Movie updated successfully!");
-
-        // Update movie in the list
-        setMovies((prevMovies) =>
-          prevMovies.map((m) =>
-            m._id === selectedMovie._id ? { ...m, ...movieData } : m
-          )
-        );
-
-        // Reset form fields
-        setMovie({
-          title: "",
-          overview: "",
-          backdrop_path: "",
-          poster_path: "",
-          release_date: "",
-          price: "",
-          vote_count: "",
-          vote_average: "",
-          language: "",
-          status: "",
-        });
-
-        setSelectedMovie(null);
-      } catch (error) {
-        alert("Failed to update movie. Please try again.");
-      }
+    
+    // Clear specific field error when user starts typing
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null
+      });
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      const movieData = {
-        ...movie,
-        vote_average: parseFloat(movie.vote_average).toFixed(2),
-      };
-
-      try {
-        await addMovie(movieData); // Send request to backend
-        alert("Movie added successfully!");
-
-        // Refresh movie list after adding
-        setMovies((prevMovies) => [...prevMovies, movieData]);
-        setFilteredMovies((prevMovies) => [...prevMovies, movieData]);
-
-        // Reset form fields
-        setMovie({
-          title: "",
-          overview: "",
-          backdrop_path: "",
-          poster_path: "",
-          release_date: "",
-          price: "",
-          vote_count: "",
-          vote_average: "",
-          language: "",
-          status: "",
-        });
-
-        setSelectedMovie(null);
-      } catch (error) {
-        alert("Failed to add movie. Please try again.");
-      }
-    }
-  };
-
-  const handleSelectMovie = (movie) => {
-    setSelectedMovie(movie);
-    setMovie(movie);
-  };
-
-  const handleCancelEdit = () => {
-    setSelectedMovie(null);
+  const resetForm = () => {
     setMovie({
       title: "",
       overview: "",
@@ -255,6 +238,105 @@ const AddMovies = () => {
       language: "",
       status: "",
     });
+    setErrors({});
+    setSubmitError(null);
+  };
+
+  const handleUpdateMovie = async (e) => {
+    e.preventDefault();
+    setSubmitError(null);
+
+    if (validateForm()) {
+      try {
+        setSubmitting(true);
+        const movieData = {
+          ...movie,
+          vote_average: parseFloat(movie.vote_average).toFixed(2),
+          price: parseFloat(movie.price),
+          vote_count: parseInt(movie.vote_count),
+        };
+        
+        await updateMovie(selectedMovie._id, movieData);
+        
+        // Refresh movie list after update
+        await fetchMovies();
+        
+        // Reset form fields
+        resetForm();
+        setSelectedMovie(null);
+        
+        alert("Movie updated successfully!");
+      } catch (error) {
+        setSubmitError("Failed to update movie. Please try again.");
+        alert("Failed to update movie. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
+    } else {
+      // Scroll to the first error
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        const element = document.querySelector(`[name="${firstErrorField}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.focus();
+        }
+      }
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitError(null);
+
+    if (validateForm()) {
+      try {
+        setSubmitting(true);
+        const movieData = {
+          ...movie,
+          vote_average: parseFloat(movie.vote_average).toFixed(2),
+          price: parseFloat(movie.price),
+          vote_count: parseInt(movie.vote_count),
+        };
+
+        await addMovie(movieData); // Send request to backend
+        
+        // Refresh movie list after adding
+        await fetchMovies();
+        
+        // Reset form fields
+        resetForm();
+        
+        alert("Movie added successfully!");
+      } catch (error) {
+        setSubmitError("Failed to add movie. Please try again.");
+        alert("Failed to add movie. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
+    } else {
+      // Scroll to the first error
+      const firstErrorField = Object.keys(errors)[0];
+      if (firstErrorField) {
+        const element = document.querySelector(`[name="${firstErrorField}"]`);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth", block: "center" });
+          element.focus();
+        }
+      }
+    }
+  };
+
+  const handleSelectMovie = (movie) => {
+    setSelectedMovie(movie);
+    setMovie(movie);
+    setErrors({});
+    setSubmitError(null);
+  };
+
+  const handleCancelEdit = () => {
+    setSelectedMovie(null);
+    resetForm();
   };
 
   // Function to render form fields
@@ -268,12 +350,13 @@ const AddMovies = () => {
           margin="normal" 
           error={!!errors[field]}
         >
-          <InputLabel>Language</InputLabel>
+          <InputLabel>Language *</InputLabel>
           <Select
             name={field}
             value={movie[field]}
-            label="Language"
+            label="Language *"
             onChange={handleChange}
+            required
           >
             {languageOptions.map((lang) => (
               <MenuItem key={lang} value={lang}>
@@ -299,12 +382,13 @@ const AddMovies = () => {
           margin="normal" 
           error={!!errors[field]}
         >
-          <InputLabel>Status</InputLabel>
+          <InputLabel>Status *</InputLabel>
           <Select
             name={field}
             value={movie[field]}
-            label="Status"
+            label="Status *"
             onChange={handleChange}
+            required
           >
             {statusOptions.map((status) => (
               <MenuItem key={status} value={status}>
@@ -327,13 +411,15 @@ const AddMovies = () => {
         <TextField
           key={field}
           fullWidth
-          label="RELEASE DATE"
+          label="RELEASE DATE *"
           name={field}
           value={movie[field]}
           onChange={handleChange}
           margin="normal"
           error={!!errors[field]}
+          helperText={errors[field] || ""}
           type="date"
+          required
           InputLabelProps={{
             shrink: true,
           }}
@@ -349,13 +435,14 @@ const AddMovies = () => {
       <TextField
         key={field}
         fullWidth
-        label={field.replace("_", " ").toUpperCase()}
+        label={`${field.replace("_", " ").toUpperCase()} *`}
         name={field}
         value={movie[field]}
         onChange={handleChange}
         margin="normal"
         error={!!errors[field]}
         helperText={errors[field] || ""}
+        required
         type={
           ["price", "vote_count", "vote_average"].includes(field)
             ? "number"
@@ -364,6 +451,10 @@ const AddMovies = () => {
         inputProps={
           field === "vote_average"
             ? { min: 1, max: 10, step: "0.01" }
+            : field === "price"
+            ? { min: 0.01, step: "0.01" }
+            : field === "vote_count"
+            ? { min: 0 }
             : {}
         }
       />
@@ -407,12 +498,23 @@ const AddMovies = () => {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={4}>Loading movies...</TableCell>
+                  <TableCell colSpan={4} align="center">
+                    <CircularProgress size={24} />
+                    <Typography variant="body2" sx={{ ml: 1 }}>
+                      Loading movies...
+                    </Typography>
+                  </TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={4} sx={{ color: "red" }}>
-                    {error}
+                  <TableCell colSpan={4}>
+                    <Alert severity="error">{error}</Alert>
+                  </TableCell>
+                </TableRow>
+              ) : filteredMovies.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} align="center">
+                    No movies found
                   </TableCell>
                 </TableRow>
               ) : (
@@ -421,6 +523,8 @@ const AddMovies = () => {
                     key={movie._id}
                     hover
                     onClick={() => handleSelectMovie(movie)}
+                    selected={selectedMovie && selectedMovie._id === movie._id}
+                    sx={{ cursor: "pointer" }}
                   >
                     <TableCell>{movie.title}</TableCell>
                     <TableCell align="right">₹{movie.price || "N/A"}</TableCell>
@@ -428,6 +532,7 @@ const AddMovies = () => {
                     <TableCell align="right">
                       <Button
                         color="error"
+                        disabled={submitting}
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent row click event
                           handleDeleteMovie(movie._id);
@@ -444,38 +549,76 @@ const AddMovies = () => {
         </TableContainer>
       </Box>
 
-      {/* Movie Form */}
+      {/* Movie Form - Adjusted to fit screen height */}
       <Box
         flex={1}
         display="flex"
-        justifyContent="center"
-        alignItems="center"
+        flexDirection="column"
         p={3}
+        sx={{
+          height: "100vh",
+          overflow: "auto"
+        }}
       >
-        <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: "500px" }}>
+        <Paper 
+          elevation={3} 
+          sx={{ 
+            p: 4, 
+            width: "100%", 
+            maxWidth: "800px", 
+            mx: "auto",
+            display: "flex",
+            flexDirection: "column",
+            height: "calc(100vh - 40px)", // Account for padding
+            overflow: "auto"
+          }}
+        >
           <Typography variant="h5" gutterBottom>
             {selectedMovie ? "Edit Movie" : "Add Movie"}
           </Typography>
-          <form onSubmit={selectedMovie ? handleUpdateMovie : handleSubmit}>
-            {[
-              "title",
-              "overview",
-              "backdrop_path",
-              "poster_path",
-              "release_date",
-              "price",
-              "vote_count",
-              "vote_average",
-              "language",
-              "status"
-            ].map((field) => renderTextField(field))}
-            <Box display="flex" justifyContent="space-between" mt={2}>
+          
+          {submitError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {submitError}
+            </Alert>
+          )}
+          
+          <Typography variant="caption" color="text.secondary" sx={{ mb: 2 }}>
+            All fields marked with * are required
+          </Typography>
+          
+          <Box 
+            component="form" 
+            onSubmit={selectedMovie ? handleUpdateMovie : handleSubmit}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              flexGrow: 1,
+              overflow: "auto"
+            }}
+          >
+            <Box sx={{ flexGrow: 1, overflow: "auto", pr: 1 }}>
+              {[
+                "title",
+                "overview",
+                "backdrop_path",
+                "poster_path",
+                "release_date",
+                "price",
+                "vote_count",
+                "vote_average",
+                "language",
+                "status"
+              ].map((field) => renderTextField(field))}
+            </Box>
+            <Box display="flex" justifyContent="space-between" mt={2} pt={2} borderTop="1px solid #eee">
               {selectedMovie && (
                 <Button
                   variant="outlined"
                   color="secondary"
                   startIcon={<FaTimes />}
                   onClick={handleCancelEdit}
+                  disabled={submitting}
                 >
                   Cancel
                 </Button>
@@ -485,11 +628,19 @@ const AddMovies = () => {
                 variant="contained"
                 color="primary"
                 startIcon={selectedMovie ? <FaSave /> : null}
+                disabled={submitting}
               >
-                {selectedMovie ? "Update Movie" : "Submit Movie"}
+                {submitting ? (
+                  <>
+                    <CircularProgress size={24} color="inherit" sx={{ mr: 1 }} />
+                    {selectedMovie ? "Updating..." : "Submitting..."}
+                  </>
+                ) : (
+                  selectedMovie ? "Update Movie" : "Submit Movie"
+                )}
               </Button>
             </Box>
-          </form>
+          </Box>
         </Paper>
       </Box>
     </Box>
