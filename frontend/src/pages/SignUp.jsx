@@ -15,6 +15,7 @@ const SignUp = () => {
   const validationSchema = Yup.object({
     name: Yup.string()
       .min(3, "Name must be at least 3 characters")
+      .matches(/^[a-zA-Z ]+$/, "Name should only contain letters and spaces")
       .required("Full Name is required"),
 
     email: Yup.string()
