@@ -1,11 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Search,
-  ChevronDown,
   User,
-  Bookmark,
   Package,
-  Settings,
   LogOut,
 } from "lucide-react";
 import { getUserDetails } from "../api/userApi";

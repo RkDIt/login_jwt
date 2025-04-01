@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import localStorageUtil from "../utils/localStorage";
+import { CircularProgress } from "@mui/material"; // Import Material UI spinner
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -11,15 +12,20 @@ const Logout = () => {
     localStorageUtil.remove("role");
 
     // Refresh the page
-    window.location.reload();
-
-    // Redirect to login after a short delay (not needed, but can ensure proper redirection)
+    
+    // Redirect to login after a short delay
     setTimeout(() => {
+      // window.location.reload();
       navigate("/", { replace: true });
-    }, 100);
+    }, 3000);
   }, [navigate]);
 
-  return <div>Logging out...</div>;
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <CircularProgress size={50} color="primary" />
+      <p className="ml-3 text-lg text-gray-600">Logging out...</p>
+    </div>
+  );
 };
 
 export default Logout;

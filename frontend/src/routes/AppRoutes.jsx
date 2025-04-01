@@ -59,13 +59,13 @@ const AppRoutes = () => {
           )
         }
       />
+        <Route path="/logout" element={<Logout />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
 
       {/* User Protected Routes */}
       <Route element={<PrivateRoute allowedRoles={["user"]} />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/profile" element={<Profile />} />
-        <Route path="/logout" element={<Logout />} />
         <Route path="/movieInfo/:id" element={<MovieInfo />} />
         <Route path="/booking/:movieId" element={<BookingPage />} />
         <Route path="/receipt" element={<Receipt/>} />

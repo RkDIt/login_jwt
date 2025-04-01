@@ -30,7 +30,7 @@ const AdminSidePanel = () => {
   const handleLogout = () => {
     localStorageUtil.clear(); 
     navigate("/logout"); 
-    window.location.reload();
+    // window.location.reload();
   };
 
   const menuItems = [
