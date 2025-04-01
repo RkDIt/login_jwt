@@ -38,7 +38,8 @@ const AddMovies = () => {
     price: "",
     vote_count: "",
     vote_average: "",
-    language: "", // Added language field
+    language: "",
+    status: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -50,6 +51,13 @@ const AddMovies = () => {
     "Punjabi", 
     "Tamil", 
     "Japanese"
+  ];
+
+  // Status options
+  const statusOptions = [
+    "Removed",
+    "Upcoming",
+    "Now-playing"
   ];
 
   useEffect(() => {
@@ -99,6 +107,8 @@ const AddMovies = () => {
       tempErrors.vote_average = "Vote average must be between 1 and 10.";
     if (!movie.language)
       tempErrors.language = "Language is required.";
+    if (!movie.status)
+      tempErrors.status = "Status is required.";
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
@@ -179,6 +189,7 @@ const AddMovies = () => {
           vote_count: "",
           vote_average: "",
           language: "",
+          status: "",
         });
 
         setSelectedMovie(null);
@@ -215,6 +226,7 @@ const AddMovies = () => {
           vote_count: "",
           vote_average: "",
           language: "",
+          status: "",
         });
 
         setSelectedMovie(null);
@@ -241,6 +253,7 @@ const AddMovies = () => {
       vote_count: "",
       vote_average: "",
       language: "",
+      status: "",
     });
   };
 
@@ -265,6 +278,37 @@ const AddMovies = () => {
             {languageOptions.map((lang) => (
               <MenuItem key={lang} value={lang}>
                 {lang}
+              </MenuItem>
+            ))}
+          </Select>
+          {errors[field] && (
+            <Typography color="error" variant="caption">
+              {errors[field]}
+            </Typography>
+          )}
+        </FormControl>
+      );
+    }
+
+    // Special handling for status field
+    if (field === "status") {
+      return (
+        <FormControl 
+          key={field} 
+          fullWidth 
+          margin="normal" 
+          error={!!errors[field]}
+        >
+          <InputLabel>Status</InputLabel>
+          <Select
+            name={field}
+            value={movie[field]}
+            label="Status"
+            onChange={handleChange}
+          >
+            {statusOptions.map((status) => (
+              <MenuItem key={status} value={status}>
+                {status}
               </MenuItem>
             ))}
           </Select>
@@ -356,17 +400,18 @@ const AddMovies = () => {
               <TableRow>
                 <TableCell>Title</TableCell>
                 <TableCell align="right">Price (₹)</TableCell>
+                <TableCell align="right">Status</TableCell>
                 <TableCell align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={3}>Loading movies...</TableCell>
+                  <TableCell colSpan={4}>Loading movies...</TableCell>
                 </TableRow>
               ) : error ? (
                 <TableRow>
-                  <TableCell colSpan={3} sx={{ color: "red" }}>
+                  <TableCell colSpan={4} sx={{ color: "red" }}>
                     {error}
                   </TableCell>
                 </TableRow>
@@ -379,6 +424,7 @@ const AddMovies = () => {
                   >
                     <TableCell>{movie.title}</TableCell>
                     <TableCell align="right">₹{movie.price || "N/A"}</TableCell>
+                    <TableCell align="right">{movie.status || "N/A"}</TableCell>
                     <TableCell align="right">
                       <Button
                         color="error"
@@ -420,7 +466,8 @@ const AddMovies = () => {
               "price",
               "vote_count",
               "vote_average",
-              "language", // Added language field
+              "language",
+              "status"
             ].map((field) => renderTextField(field))}
             <Box display="flex" justifyContent="space-between" mt={2}>
               {selectedMovie && (

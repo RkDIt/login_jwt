@@ -15,8 +15,8 @@ const movieSchema = new mongoose.Schema({
   vote_count: { type: Number, required: true },
   status: {
     type: String,
-    enum: ["Upcoming", "Now playing", "Removed"],
-    default: "Upcoming",
+    enum: ["Upcoming", "Now-playing", "Removed"],
+    default: "Now-playing",
   },
   language: {
     type: String,

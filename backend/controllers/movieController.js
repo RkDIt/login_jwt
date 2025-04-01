@@ -128,6 +128,7 @@ export const addMovieControl = async (req, res) => {
       vote_average,
       vote_count,
       language,
+      status,
     } = req.body;
 
     if (
@@ -177,6 +178,7 @@ export const addMovieControl = async (req, res) => {
       vote_average: avgVote,
       vote_count: voteCount,
       language,
+      status,
     };
 
     const movie = await addMovie(newMovie);

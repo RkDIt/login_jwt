@@ -16,7 +16,7 @@ const Logout = () => {
     // Redirect to login after a short delay
     setTimeout(() => {
       // window.location.reload();
-      navigate("/", { replace: true });
+      navigate("/signup", { replace: true });
     }, 3000);
   }, [navigate]);
 

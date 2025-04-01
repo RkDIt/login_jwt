@@ -38,6 +38,7 @@ const addMovie = async (movieData) => {
       vote_average,
       vote_count,
       language,
+      status
     } = movieData;
 
     if (
@@ -90,6 +91,7 @@ const addMovie = async (movieData) => {
       vote_average: avgVote,
       vote_count: voteCount,
       language,
+      status,
     });
 
     // Save to database
